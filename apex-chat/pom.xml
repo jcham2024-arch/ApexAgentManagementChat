@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.apex</groupId>
+        <artifactId>apex</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../apex/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>apex-chat</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Apex Chat (Tier 0 group parent)</name>
+    <description>Group parent for every apex-chat Tier 0 module. Carries the
+        enterprise ban so a Tier 1 module cannot silently inherit it.</description>
+
+    <modules>
+        <module>apex-chat-common</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <id>ban-enterprise-in-tier-0</id>
+                        <phase>validate</phase>
+                        <goals><goal>enforce</goal></goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.springframework*</exclude>
+                                        <exclude>org.springframework.boot*</exclude>
+                                        <exclude>org.springframework.ai*</exclude>
+                                        <exclude>com.google.cloud*</exclude>
+                                        <exclude>com.google.mcp*</exclude>
+                                        <exclude>org.embabel*</exclude>
+                                        <exclude>com.fasterxml.jackson*</exclude>
+                                        <exclude>io.micrometer*</exclude>
+                                        <exclude>com.zaxxer*</exclude>
+                                    </excludes>
+                                    <searchTransitive>true</searchTransitive>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
