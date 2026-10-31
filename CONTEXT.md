@@ -78,6 +78,10 @@ phase says so.
 | `PHASE-S2.0-MODULE-SKELETONS-SESSION.md` | S2.0 — protocol, context deltas, scope |
 | `PHASE-S2.0-MODULE-SKELETONS-POMS.md` | S2.0 — POM changes (§3.1–§3.5) |
 | `PHASE-S2.0-MODULE-SKELETONS-MODULES.md` | S2.0 — module files, CI gate, exit criteria |
+| `PHASE-S2.1-PORTS-SESSION.md` | S2.1 — protocol, deltas, scope, `TypedId` |
+| `PHASE-S2.1-PORTS-INTERFACES.md` | S2.1 — §4.2 the nine port interfaces |
+| `PHASE-S2.1-PORTS-RECORDS.md` | S2.1 — §4.3–§4.4 records and package-info |
+| `PHASE-S2.1-PORTS-TESTS-DOCS.md` | S2.1 — §4.5–§7 tests, catalogue, commits |
 | `PHASE-S3-SECURITY.md` | S3 — auth, tenant, audit, HITL |
 | `PHASE-S4-MEMORY-SANDBOX.md` | S4 — memory router, three sandbox tiers |
 | `PHASE-S5-FLYWHEEL.md` | S5 — log → propose → gate → deploy |
