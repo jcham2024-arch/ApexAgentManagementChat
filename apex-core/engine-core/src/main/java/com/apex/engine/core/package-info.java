@@ -1,6 +1,6 @@
 /**
- * Core loop, agent state machine, and port interfaces. Tier 0. Ports
- * consumed: none (S2.1). Ports implemented: none (S2.1).
+ * Core loop, agent state machine, and the nine port interfaces.
+ * Tier 0. Ports defined: all nine (see port subpackage).
  */
 @NullMarked
 package com.apex.engine.core;
