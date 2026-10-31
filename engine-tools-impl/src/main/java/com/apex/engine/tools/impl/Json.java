@@ -11,6 +11,11 @@ import java.util.Objects;
  * strings, numbers, booleans, null. Integral numbers parse as
  * {@link Long}; everything else as {@link Double}. Not a security
  * boundary — validation happens after parsing.
+ *
+ * <p>Sibling parser lives in {@code engine-llm-http}
+ * ({@code JsonParser}, S2.4) and throws {@code LlmException} instead of
+ * {@code ToolException}. The duplication is intentional and temporary;
+ * consolidation is tracked for a future refactor phase.
  */
 public final class Json {
 
