@@ -1,6 +1,7 @@
 /**
- * A* planner with GOAP preconditions and OODA replan loop. Tier 0. Ports
- * consumed: none (S2.1). Ports implemented: none (S2.1).
+ * Pure A* planner with GOAP preconditions and effects, typed
+ * blackboard, and risk-weighted costs. Tier 0. No ports. Bridging to
+ * PlannerPort happens in engine-core.
  */
 @NullMarked
 package com.apex.engine.planner;
