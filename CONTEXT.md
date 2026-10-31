@@ -75,6 +75,9 @@ phase says so.
 |---|---|
 | `PHASE-S1-FOUNDATION.md` | S1 — ports, POMs, gates |
 | `PHASE-S2-KERNEL.md` | S2 — planner, loop, tools, CLI |
+| `PHASE-S2.0-MODULE-SKELETONS-SESSION.md` | S2.0 — protocol, context deltas, scope |
+| `PHASE-S2.0-MODULE-SKELETONS-POMS.md` | S2.0 — POM changes (§3.1–§3.5) |
+| `PHASE-S2.0-MODULE-SKELETONS-MODULES.md` | S2.0 — module files, CI gate, exit criteria |
 | `PHASE-S3-SECURITY.md` | S3 — auth, tenant, audit, HITL |
 | `PHASE-S4-MEMORY-SANDBOX.md` | S4 — memory router, three sandbox tiers |
 | `PHASE-S5-FLYWHEEL.md` | S5 — log → propose → gate → deploy |
