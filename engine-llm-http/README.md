@@ -1,18 +1,25 @@
 # engine-llm-http
 
-**Tier:** 1 · **Purpose:** OpenAI-compatible ChatModelPort implementation over java.net.http.
+**Tier:** 1 · **Purpose:** OpenAI-compatible ChatModelPort over java.net.http.
 
 ## Allowed dependencies
-Tier 0 modules + JDK I/O (java.io, java.nio.file, java.net.http, java.sql).
-HTTP uses the JDK client — no Maven artifact is added for it. No Spring,
-Google, Embabel, Jackson, Micrometer, or HikariCP — enforced in this
-module's own POM.
+java.base, java.net.http, jspecify
 
 ## Ports consumed
-none (S2.1)
+none
 
 ## Ports implemented
-none (S2.1)
+ChatModelPort (via OpenAiCompatibleProvider)
+
+## Configuration
+ProviderConfigLoader.fromEnv() reads (in priority order):
+- APEX_LLM_BASE_URL + APEX_LLM_API_KEY (+ optional APEX_LLM_DEFAULT_MODEL, APEX_LLM_TIMEOUT_SEC)
+- OPENROUTER_API_KEY (base URL defaults to openrouter.ai/api/v1)
+- NVIDIA_API_KEY (integrate.api.nvidia.com/v1)
+- DEEPSEEK_API_KEY (api.deepseek.com/v1)
+- GROQ_API_KEY (api.groq.com/openai/v1)
 
 ## Tests
-none yet — populated in S2.1+
+ChatModelPortDefaultStreamTest · ChatChunkTest · JsonParserTest ·
+ProviderConfigLoaderTest · SseLineParserTest · OpenAiProtocolTest ·
+OpenAiCompatibleProviderChatTest · OpenAiCompatibleProviderStreamTest
