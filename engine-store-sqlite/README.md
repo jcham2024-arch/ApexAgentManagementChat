@@ -1,17 +1,25 @@
 # engine-store-sqlite
 
-**Tier:** 1 · **Purpose:** SQLite-backed StoragePort for step and session logs.
+**Tier:** 1 · **Purpose:** SQLite-backed StoragePort for step and
+session logs.
 
 ## Allowed dependencies
-Tier 0 modules + JDK I/O (java.io, java.nio.file, java.net.http, java.sql).
-No Spring, Google, Embabel, Jackson, Micrometer, or HikariCP — enforced in
-this module's own POM.
+java.base, java.sql, org.xerial:sqlite-jdbc, jspecify
 
 ## Ports consumed
-none (S2.1)
+none
 
 ## Ports implemented
-none (S2.1)
+StoragePort (via SqliteStoragePort)
+
+## Design notes
+- Each operation opens its own JDBC connection; WAL mode + 5s busy
+  timeout applied on connect.
+- Schema is minimal (five columns matching StepLogEntry). The richer
+  step_log schema lands in S5.
+- Duplicate step_id throws StorageException("duplicate").
+- This adapter is for server and SBC. Android uses Room (S9) against
+  the same StoragePort interface.
 
 ## Tests
-none yet — populated in S2.1+
+SqliteStoragePortTest · SqliteStoragePortConcurrencyTest
