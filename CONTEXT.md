@@ -158,7 +158,7 @@ Catches reflection, `ServiceLoader`, shaded deps.
 |---|---|---|
 | S1 | `PHASE-S1-FOUNDATION.md` | 01, 02 |
 | S2 | `PHASE-S2-KERNEL.md` | 03, 06, 08 |
-| S3 | `PHASE-S3-SECURITY.md` | 04, 09, 10 |
+| S3 | `PHASE-S3-SECURITY.md` | none — router §4; S6 bridges 04, 09, 10 |
 | S4 | `PHASE-S4-MEMORY-SANDBOX.md` | 05, 08 |
 | S5 | `PHASE-S5-FLYWHEEL.md` | 11 |
 | S6 | `PHASE-S6-SERVER-GUI.md` | 06, 09 |
