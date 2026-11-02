@@ -44,8 +44,8 @@ class SqliteStoragePortSchemaTest {
         }
 
         assertThat(columns).containsExactlyInAnyOrder(
-                "step_id", "session_id", "step_index", "step_type",
-                "duration_ms");
+                "step_id", "tenant_id", "session_id", "step_index",
+                "step_type", "duration_ms");
         assertThat(columns).doesNotContain("created_at");
     }
 
@@ -70,7 +70,7 @@ class SqliteStoragePortSchemaTest {
             }
         }
 
-        assertThat(indexes).contains("idx_step_log_session");
+        assertThat(indexes).contains("idx_step_log_tenant_session");
     }
 
     private Connection connect() throws Exception {

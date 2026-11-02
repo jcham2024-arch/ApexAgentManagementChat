@@ -1,5 +1,6 @@
 package com.apex.engine.store.sqlite;
 
+import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.model.StepLogEntry;
 
@@ -19,37 +20,45 @@ import java.util.Objects;
 /**
  * SQLite implementation of {@link StoragePort}. Each operation opens
  * its own JDBC connection; WAL mode and a busy timeout are applied on
- * connect. Duplicate {@code step_id} throws
- * {@link StorageException}. Do not wrap calls in a transaction — SQLite
- * serializes writes at the file level.
- *
- * <p>This adapter is for server and SBC deployments. Android uses Room
- * (S9) against the same {@link StoragePort} interface.
+ * connect. Every query filters by {@code tenant_id} — a query for
+ * tenant A never returns rows written by tenant B, regardless of the
+ * session id passed in.
  */
 public final class SqliteStoragePort implements StoragePort {
 
-    private static final String SCHEMA = """
+    private static final String CREATE_TABLE = """
             CREATE TABLE IF NOT EXISTS step_log (
                 step_id     TEXT PRIMARY KEY,
+                tenant_id   TEXT NOT NULL,
                 session_id  TEXT NOT NULL,
                 step_index  INTEGER NOT NULL,
                 step_type   TEXT NOT NULL,
                 duration_ms INTEGER NOT NULL
-            );
-            CREATE INDEX IF NOT EXISTS idx_step_log_session
-                ON step_log(session_id, step_index);
+            )
+            """;
+
+    private static final String CREATE_INDEX = """
+            CREATE INDEX IF NOT EXISTS idx_step_log_tenant_session
+                ON step_log(tenant_id, session_id, step_index)
+            """;
+
+    private static final String MIGRATE_ADD_TENANT = """
+            ALTER TABLE step_log
+            ADD COLUMN tenant_id TEXT NOT NULL DEFAULT 'legacy-migration'
             """;
 
     private static final String INSERT_SQL = """
             INSERT INTO step_log
-                (step_id, session_id, step_index, step_type, duration_ms)
-            VALUES (?, ?, ?, ?, ?)
+                (step_id, tenant_id, session_id, step_index, step_type,
+                 duration_ms)
+            VALUES (?, ?, ?, ?, ?, ?)
             """;
 
     private static final String SELECT_SQL = """
-            SELECT step_id, session_id, step_index, step_type, duration_ms
+            SELECT step_id, tenant_id, session_id, step_index, step_type,
+                   duration_ms
             FROM step_log
-            WHERE session_id = ?
+            WHERE tenant_id = ? AND session_id = ?
             ORDER BY step_index ASC
             """;
 
@@ -70,16 +79,35 @@ public final class SqliteStoragePort implements StoragePort {
         initialize();
     }
 
+    /**
+     * Creates the table, migrates a pre-S3.2 database, then creates the
+     * index. The order matters: the index names {@code tenant_id}, so it
+     * cannot be created before the migration has added that column. The
+     * phase file's single schema string created both together and failed
+     * on legacy databases with "no such column: tenant_id".
+     */
     private void initialize() {
         try (Connection conn = open();
              Statement st = conn.createStatement()) {
-            for (String stmt : SCHEMA.split(";")) {
-                if (!stmt.isBlank()) {
-                    st.execute(stmt);
-                }
+            st.execute(CREATE_TABLE);
+            if (!hasTenantColumn(conn)) {
+                st.execute(MIGRATE_ADD_TENANT);
             }
+            st.execute(CREATE_INDEX);
         } catch (SQLException e) {
             throw new StorageException("init", e.getMessage(), e);
+        }
+    }
+
+    private static boolean hasTenantColumn(Connection conn) throws SQLException {
+        try (Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery("PRAGMA table_info(step_log)")) {
+            while (rs.next()) {
+                if ("tenant_id".equalsIgnoreCase(rs.getString("name"))) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -98,10 +126,11 @@ public final class SqliteStoragePort implements StoragePort {
         try (Connection conn = open();
              PreparedStatement ps = conn.prepareStatement(INSERT_SQL)) {
             ps.setString(1, entry.stepId());
-            ps.setString(2, entry.sessionId());
-            ps.setInt(3, entry.index());
-            ps.setString(4, entry.stepType());
-            ps.setLong(5, entry.durationMs());
+            ps.setString(2, entry.tenantId().value());
+            ps.setString(3, entry.sessionId());
+            ps.setInt(4, entry.index());
+            ps.setString(5, entry.stepType());
+            ps.setLong(6, entry.durationMs());
             ps.executeUpdate();
         } catch (SQLException e) {
             String category = isDuplicate(e) ? "duplicate" : "append";
@@ -110,16 +139,19 @@ public final class SqliteStoragePort implements StoragePort {
     }
 
     @Override
-    public List<StepLogEntry> stepsFor(String sessionId) {
+    public List<StepLogEntry> stepsFor(TenantId tenantId, String sessionId) {
+        Objects.requireNonNull(tenantId, "tenantId");
         Objects.requireNonNull(sessionId, "sessionId");
         try (Connection conn = open();
              PreparedStatement ps = conn.prepareStatement(SELECT_SQL)) {
-            ps.setString(1, sessionId);
+            ps.setString(1, tenantId.value());
+            ps.setString(2, sessionId);
             try (ResultSet rs = ps.executeQuery()) {
                 List<StepLogEntry> out = new ArrayList<>();
                 while (rs.next()) {
                     out.add(new StepLogEntry(
                             rs.getString("step_id"),
+                            new TenantId(rs.getString("tenant_id")),
                             rs.getString("session_id"),
                             rs.getInt("step_index"),
                             rs.getString("step_type"),
@@ -133,7 +165,6 @@ public final class SqliteStoragePort implements StoragePort {
     }
 
     private static boolean isDuplicate(SQLException e) {
-        // SQLite constraint violation code is 19 (SQLITE_CONSTRAINT).
         return e.getErrorCode() == 19
                 || e.getMessage().toLowerCase().contains("unique");
     }
