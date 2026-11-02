@@ -2,6 +2,7 @@ package com.apex.engine.core.port;
 
 import com.apex.engine.core.port.model.ApprovalDecision;
 import com.apex.engine.core.port.model.ApprovalRequest;
+import com.apex.engine.planner.RiskLevel;
 import com.apex.engine.core.port.model.AuditEntry;
 import com.apex.engine.core.port.model.ChatRequest;
 import com.apex.engine.core.port.model.ChatResponse;
@@ -54,8 +55,8 @@ class PortTest {
         ApprovalPort port =
                 req -> new ApprovalDecision(req.id(), true, "approved");
 
-        assertThat(port.request(new ApprovalRequest("r1", "write file", "L1"))
-                .approved()).isTrue();
+        assertThat(port.request(new ApprovalRequest("r1", "write file",
+                RiskLevel.L1)).approved()).isTrue();
     }
 
     @Test

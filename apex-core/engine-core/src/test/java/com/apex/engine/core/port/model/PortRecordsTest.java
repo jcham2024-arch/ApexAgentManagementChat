@@ -2,9 +2,13 @@ package com.apex.engine.core.port.model;
 
 import org.junit.jupiter.api.Test;
 
+import com.apex.engine.planner.RiskLevel;
+
 import java.time.Instant;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
@@ -62,11 +66,26 @@ class PortRecordsTest {
     @Test
     void approvalRequestRejectsNulls() {
         assertThatNullPointerException()
-                .isThrownBy(() -> new ApprovalRequest(null, "s", "L0"));
+                .isThrownBy(() -> new ApprovalRequest(null, "s", RiskLevel.L0));
         assertThatNullPointerException()
-                .isThrownBy(() -> new ApprovalRequest("r1", null, "L0"));
+                .isThrownBy(() -> new ApprovalRequest("r1", null, RiskLevel.L0));
         assertThatNullPointerException()
                 .isThrownBy(() -> new ApprovalRequest("r1", "s", null));
+    }
+
+    @Test
+    void approvalRequestRejectsBlankId() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new ApprovalRequest("  ", "s", RiskLevel.L0))
+                .withMessage("id must not be blank");
+    }
+
+    @Test
+    void approvalRequestRiskLevelIsTypedAndGatesApproval() {
+        assertThat(new ApprovalRequest("r1", "s", RiskLevel.L2).riskLevel()
+                .requiresApproval()).isFalse();
+        assertThat(new ApprovalRequest("r2", "s", RiskLevel.L3).riskLevel()
+                .requiresApproval()).isTrue();
     }
 
     @Test
