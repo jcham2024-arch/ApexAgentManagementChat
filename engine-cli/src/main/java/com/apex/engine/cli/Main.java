@@ -1,5 +1,6 @@
 package com.apex.engine.cli;
 
+import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -59,8 +60,12 @@ public final class Main {
             return 1;
         }
 
+        TenantId tenant = parsed.tenant() != null
+                ? parsed.tenant()
+                : new TenantId(env.getOrDefault("APEX_TENANT_ID", "cli-default"));
+
         TaskRunner runner = parsed.real()
-                ? buildRealRunner(task, env, parsed.workspace(), err)
+                ? buildRealRunner(task, env, parsed.workspace(), tenant, err)
                 : new StubTaskRunner();
 
         if (runner == null) return 1;
@@ -81,6 +86,7 @@ public final class Main {
     private static TaskRunner buildRealRunner(TaskDefinition task,
                                               Map<String, String> env,
                                               Path workspace,
+                                              TenantId tenant,
                                               PrintStream err) {
         if (task.modelRoute().isBlank()) {
             err.println("real mode requires model_route in the task file");
@@ -95,7 +101,7 @@ public final class Main {
             Files.createDirectories(workspace.resolve(".apex"));
             StoragePort storage = new SqliteStoragePort(
                     workspace.resolve(".apex/steps.db"));
-            return new RealTaskRunner(model, tools, storage, workspace);
+            return new RealTaskRunner(model, tools, storage, tenant, workspace);
         } catch (Exception e) {
             err.println("adapter init failed: " + e.getMessage());
             return null;
@@ -117,10 +123,11 @@ public final class Main {
     }
 
     /** Parsed CLI arguments. */
-    record Args(boolean real, Path workspace, Path taskFile) {
+    record Args(boolean real, Path workspace, TenantId tenant, Path taskFile) {
         static Args parse(String[] args) {
             boolean real = false;
             Path workspace = Path.of(".").toAbsolutePath().normalize();
+            String tenantStr = null;
             Path taskFile;
             List<String> positional = new ArrayList<>();
 
@@ -134,6 +141,12 @@ public final class Main {
                                 "--workspace needs a path");
                     }
                     workspace = Path.of(args[++i]).toAbsolutePath().normalize();
+                } else if (a.equals("--tenant")) {
+                    if (i + 1 >= args.length) {
+                        throw new IllegalArgumentException(
+                                "--tenant needs an id");
+                    }
+                    tenantStr = args[++i];
                 } else if (a.startsWith("--")) {
                     throw new IllegalArgumentException("unknown flag: " + a);
                 } else {
@@ -145,7 +158,8 @@ public final class Main {
                         "expected 1 task file, got " + positional.size());
             }
             taskFile = Path.of(positional.get(0));
-            return new Args(real, workspace, taskFile);
+            TenantId tenant = tenantStr != null ? new TenantId(tenantStr) : null;
+            return new Args(real, workspace, tenant, taskFile);
         }
     }
 }

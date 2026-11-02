@@ -1,5 +1,6 @@
 package com.apex.engine.cli;
 
+import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -15,26 +16,28 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Real task runner. ReAct loop: call the model, parse its decision,
- * either execute a tool or finish, record each step via
- * {@link StoragePort}. Stops at {@code task.maxSteps()}. Checks
- * assertions before returning success.
+ * Real task runner. ReAct loop over the model, tools, and storage.
+ * Every {@link StepLogEntry} written carries the runner's tenant, so
+ * cross-tenant queries cannot surface this run's steps.
  */
 public final class RealTaskRunner implements TaskRunner {
 
     private final ChatModelPort model;
     private final ToolExecutorPort tools;
     private final StoragePort storage;
+    private final TenantId tenantId;
     private final Path workspace;
     private final PromptBuilder prompts = new PromptBuilder();
     private final LlmResponseParser parser = new LlmResponseParser();
     private final AssertionChecker checker = new AssertionChecker();
 
     public RealTaskRunner(ChatModelPort model, ToolExecutorPort tools,
-                          StoragePort storage, Path workspace) {
+                          StoragePort storage, TenantId tenantId,
+                          Path workspace) {
         this.model = Objects.requireNonNull(model, "model");
         this.tools = Objects.requireNonNull(tools, "tools");
         this.storage = Objects.requireNonNull(storage, "storage");
+        this.tenantId = Objects.requireNonNull(tenantId, "tenantId");
         this.workspace = Objects.requireNonNull(workspace, "workspace");
     }
 
@@ -64,6 +67,7 @@ public final class RealTaskRunner implements TaskRunner {
 
             storage.appendStep(new StepLogEntry(
                     UUID.randomUUID().toString(),
+                    tenantId,
                     sessionId, step,
                     decision instanceof Decision.Done ? "finish" : "action",
                     System.currentTimeMillis() - stepStart));
@@ -82,12 +86,9 @@ public final class RealTaskRunner implements TaskRunner {
                     UUID.randomUUID().toString(),
                     action.toolName(), action.argumentsJson()));
 
-            if (result.isError()) {
-                history = prompts.withToolResult(history,
-                        "ERROR: " + result.output());
-            } else {
-                history = prompts.withToolResult(history, result.output());
-            }
+            history = result.isError()
+                    ? prompts.withToolResult(history, "ERROR: " + result.output())
+                    : prompts.withToolResult(history, result.output());
         }
         return new TaskRunResult(task.taskId(), "MAX_STEPS",
                 task.maxSteps(), elapsed(start));
