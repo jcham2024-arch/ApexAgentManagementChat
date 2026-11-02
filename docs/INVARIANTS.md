@@ -8,11 +8,11 @@ until its test exists and is green.
 | ID | Claim | Test |
 |---|---|---|
 | K1 | No dynamic JVM classloading | S3 |
-| K2 | No shell interpolation | S2.3 |
+| K2 | No shell interpolation | `RunCommandToolTest.doesNotInterpretShellMetacharacters_K2` |
 | K3 | Kernel invariants are compiled constants | S3 (deferred — Layer 1 concept not yet in tree) |
 | K4 | Canonical workspace root via toRealPath | S3 |
-| K5 | Kill process tree via ProcessHandle.descendants | S2.3 |
-| K6 | Cooperative cancellation ≤100ms | S2.2 |
+| K5 | Kill process tree via ProcessHandle.descendants | `RunCommandToolTest.enforcesTimeoutAndKillsTree_K5` |
+| K6 | Cooperative cancellation ≤100ms | `PlanLoopCancellationTest.cancellationIsHonouredWithinOneHundredMilliseconds` |
 | K7 | OS injection guarded by dead-man + rate limit | S3 |
 
 ## Evolution (E)

@@ -75,13 +75,10 @@ phase says so.
 |---|---|
 | `PHASE-S1-FOUNDATION.md` | S1 — ports, POMs, gates |
 | `PHASE-S2-KERNEL.md` | S2 — planner, loop, tools, CLI |
-| `PHASE-S2.0-MODULE-SKELETONS-SESSION.md` | S2.0 — protocol, context deltas, scope |
-| `PHASE-S2.0-MODULE-SKELETONS-POMS.md` | S2.0 — POM changes (§3.1–§3.5) |
-| `PHASE-S2.0-MODULE-SKELETONS-MODULES.md` | S2.0 — module files, CI gate, exit criteria |
-| `PHASE-S2.1-PORTS-SESSION.md` | S2.1 — protocol, deltas, scope, `TypedId` |
-| `PHASE-S2.1-PORTS-INTERFACES.md` | S2.1 — §4.2 the nine port interfaces |
-| `PHASE-S2.1-PORTS-RECORDS.md` | S2.1 — §4.3–§4.4 records and package-info |
-| `PHASE-S2.1-PORTS-TESTS-DOCS.md` | S2.1 — §4.5–§7 tests, catalogue, commits |
+| `PHASE-S2.0-MODULE-SKELETONS-*.md` | S2.0 — SESSION · POMS · MODULES |
+| `PHASE-S2.1-PORTS-*.md` | S2.1 — SESSION · INTERFACES · RECORDS · TESTS-DOCS |
+| `PHASE-S2.2-PLANNER-*.md` | S2.2 — SESSION · PRIMITIVES · ASTAR · LOOP · TESTS-DOCS |
+| `PHASE-S2.3-TOOLS-*.md` | S2.3 — SESSION · JSON · JAIL · FILE-TOOLS · RUN-COMMAND · HTTP-EXECUTOR · METADATA-TESTS · CONTRACTS-CRITERIA |
 | `PHASE-S3-SECURITY.md` | S3 — auth, tenant, audit, HITL |
 | `PHASE-S4-MEMORY-SANDBOX.md` | S4 — memory router, three sandbox tiers |
 | `PHASE-S5-FLYWHEEL.md` | S5 — log → propose → gate → deploy |
@@ -90,7 +87,8 @@ phase says so.
 | `PHASE-S8-NODE.md` | S8 — A2A node, SBC/Android participant |
 
 Supplemental phase files (`PHASE-S<N>-<NAME>-<SECTION>.md`) exist when a
-phase exceeds 200 lines. The phase file names them.
+phase exceeds 200 lines. The phase file names them, and one row above
+lists every part of that split.
 
 **One phase file per session.** If the human provides two, stop and
 report.
