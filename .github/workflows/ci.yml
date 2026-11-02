@@ -20,18 +20,30 @@ jobs:
       - name: Build and test
         run: mvn -B -q test
 
-      - name: Package tier-0 jars
-        run: mvn -B -q package -DskipTests
+      - name: Build and test (apex engine reactor)
+        run: mvn -B -q -f apex/pom.xml test
 
-      - name: Gate G2 — jdeps bytecode purity
+      - name: Package tier-0 jars
+        run: |
+          mvn -B -q package -DskipTests
+          mvn -B -q -f apex/pom.xml package -DskipTests
+
+      - name: Gate G2 — jdeps bytecode purity (Tier 0 only)
         run: |
           set -euo pipefail
-          for jar in $(find . -path '*/target/*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar'); do
+          mapfile -t TIER0_JARS < <(find \
+            apex-chat apex-core/engine-core apex-core/engine-planner \
+            apex-core/engine-tools apex-core/engine-store \
+            -path '*/target/*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' \
+            2>/dev/null)
+          if [ ${#TIER0_JARS[@]} -eq 0 ]; then
+            echo "no Tier 0 jars produced"; exit 0
+          fi
+          for jar in "${TIER0_JARS[@]}"; do
             echo "Inspecting $jar"
             if jdeps --ignore-missing-deps --multi-release 21 "$jar" \
                | grep -E 'org\.springframework|org\.embabel|com\.google\.cloud|com\.google\.mcp|com\.fasterxml\.jackson|io\.micrometer|com\.zaxxer'; then
-              echo "GATE G2 FAILED: enterprise package in $jar"
-              exit 1
+              echo "GATE G2 FAILED: enterprise package in $jar"; exit 1
             fi
           done
           echo "GATE G2 PASSED"
