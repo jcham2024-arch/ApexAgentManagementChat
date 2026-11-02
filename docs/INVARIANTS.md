@@ -12,7 +12,7 @@ until its test exists and is green.
 | K3 | Kernel invariants are compiled constants | S3 (deferred — Layer 1 concept not yet in tree) |
 | K4 | Canonical workspace root via toRealPath | S3 |
 | K5 | Kill process tree via ProcessHandle.descendants | `RunCommandToolTest.enforcesTimeoutAndKillsTree_K5` |
-| K6 | Cooperative cancellation ≤100ms | `PlanLoopCancellationTest.cancellationIsHonouredWithinOneHundredMilliseconds` |
+| K6 | Cooperative cancellation ≤100ms | `PlanLoopCancellationTest.cancellationIsHonouredWithinOneHundredMilliseconds` (S2.2) · `OpenAiCompatibleProviderStreamTest.cancellationStopsBeforeAllChunksArrive` (S2.4) |
 | K7 | OS injection guarded by dead-man + rate limit | S3 |
 
 ## Evolution (E)
