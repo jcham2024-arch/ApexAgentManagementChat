@@ -32,6 +32,7 @@
         <module>../engine-llm-http</module>
         <module>../engine-store-sqlite</module>
         <module>../engine-cli</module>
+        <module>../apex-platform</module>
     </modules>
 
     <dependencyManagement>
