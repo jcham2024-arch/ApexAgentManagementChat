@@ -1,6 +1,7 @@
 package com.apex.engine.cli;
 
 import com.apex.chat.common.identity.TenantId;
+import com.apex.engine.core.port.AuditPort;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -10,8 +11,10 @@ import com.apex.engine.llm.http.ProviderConfigLoader;
 import com.apex.engine.store.sqlite.SqliteStoragePort;
 import com.apex.engine.tools.impl.KernelToolExecutor;
 import com.apex.engine.tools.impl.RealPathJail;
+import com.apex.platform.audit.InMemoryAuditLog;
 
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -33,6 +36,14 @@ public final class Main {
 
     private static final String USAGE =
             "usage: apex-cli [--real] [--workspace <path>] <task-file>\n";
+
+    /**
+     * Development-only audit key. Production MUST set APEX_AUDIT_SECRET.
+     * This 32-byte array is public and provides no tamper-evidence against
+     * an attacker with read access to the source.
+     */
+    private static final byte[] DEV_AUDIT_KEY = (
+            "dev-only-do-not-use-in-production!!").getBytes(StandardCharsets.UTF_8);
 
     private Main() {}
 
@@ -101,7 +112,12 @@ public final class Main {
             Files.createDirectories(workspace.resolve(".apex"));
             StoragePort storage = new SqliteStoragePort(
                     workspace.resolve(".apex/steps.db"));
-            return new RealTaskRunner(model, tools, storage, tenant, workspace);
+            byte[] auditKey = env.containsKey("APEX_AUDIT_SECRET")
+                    ? env.get("APEX_AUDIT_SECRET").getBytes(StandardCharsets.UTF_8)
+                    : DEV_AUDIT_KEY;
+            AuditPort audit = new InMemoryAuditLog(auditKey);
+            return new RealTaskRunner(model, tools, storage, audit, tenant,
+                    workspace);
         } catch (Exception e) {
             err.println("adapter init failed: " + e.getMessage());
             return null;
