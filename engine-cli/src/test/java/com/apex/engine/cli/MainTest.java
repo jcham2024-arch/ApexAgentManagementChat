@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +42,7 @@ class MainTest {
 
     @Test
     void noArgsReturnsUsageError() {
-        int code = Main.run(new String[0], out, err);
+        int code = Main.run(new String[0], Map.of(), out, err);
 
         assertThat(code).isEqualTo(2);
         assertThat(stderr()).contains("usage");
@@ -49,7 +50,7 @@ class MainTest {
 
     @Test
     void extraArgsReturnsUsageError() {
-        int code = Main.run(new String[] {"a", "b"}, out, err);
+        int code = Main.run(new String[] {"a", "b"}, Map.of(), out, err);
 
         assertThat(code).isEqualTo(2);
         assertThat(stderr()).contains("usage");
@@ -57,7 +58,8 @@ class MainTest {
 
     @Test
     void missingFileReturns1() {
-        int code = Main.run(new String[] {"does-not-exist.yaml"}, out, err);
+        int code = Main.run(new String[] {"does-not-exist.yaml"}, Map.of(),
+                out, err);
 
         assertThat(code).isEqualTo(1);
         assertThat(stderr()).contains("load failed [io]");
@@ -67,7 +69,8 @@ class MainTest {
     void validTaskReturns0AndPrintsJson() {
         Path taskFile = write(VALID_TASK);
 
-        int code = Main.run(new String[] {taskFile.toString()}, out, err);
+        int code = Main.run(new String[] {taskFile.toString()}, Map.of(), out,
+                err);
 
         assertThat(code).isZero();
         assertThat(stdout()).contains("\"status\":\"STUB\"");
@@ -84,7 +87,8 @@ class MainTest {
                 tools: [read_file]
                 """);
 
-        int code = Main.run(new String[] {taskFile.toString()}, out, err);
+        int code = Main.run(new String[] {taskFile.toString()}, Map.of(), out,
+                err);
 
         assertThat(code).isEqualTo(1);
         assertThat(stderr()).contains("task_id");

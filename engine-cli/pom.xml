@@ -24,6 +24,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-llm-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-tools-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-store-sqlite</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>2.3</version>
