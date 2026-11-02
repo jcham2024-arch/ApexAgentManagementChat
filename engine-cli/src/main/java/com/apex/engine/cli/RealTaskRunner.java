@@ -1,6 +1,7 @@
 package com.apex.engine.cli;
 
 import com.apex.chat.common.identity.TenantId;
+import com.apex.engine.core.port.AuditPort;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -11,20 +12,23 @@ import com.apex.engine.core.port.model.ToolCall;
 import com.apex.engine.core.port.model.ToolResult;
 
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Real task runner. ReAct loop over the model, tools, and storage.
- * Every {@link StepLogEntry} written carries the runner's tenant, so
- * cross-tenant queries cannot surface this run's steps.
+ * Real task runner. ReAct loop over the model, tools, storage, and
+ * audit. Every tool call is audited before execution (one entry per
+ * call). Arguments are not recorded in the audit — they may contain
+ * secrets the redactor might miss.
  */
 public final class RealTaskRunner implements TaskRunner {
 
     private final ChatModelPort model;
     private final ToolExecutorPort tools;
     private final StoragePort storage;
+    private final AuditPort audit;
     private final TenantId tenantId;
     private final Path workspace;
     private final PromptBuilder prompts = new PromptBuilder();
@@ -32,11 +36,12 @@ public final class RealTaskRunner implements TaskRunner {
     private final AssertionChecker checker = new AssertionChecker();
 
     public RealTaskRunner(ChatModelPort model, ToolExecutorPort tools,
-                          StoragePort storage, TenantId tenantId,
-                          Path workspace) {
+                          StoragePort storage, AuditPort audit,
+                          TenantId tenantId, Path workspace) {
         this.model = Objects.requireNonNull(model, "model");
         this.tools = Objects.requireNonNull(tools, "tools");
         this.storage = Objects.requireNonNull(storage, "storage");
+        this.audit = Objects.requireNonNull(audit, "audit");
         this.tenantId = Objects.requireNonNull(tenantId, "tenantId");
         this.workspace = Objects.requireNonNull(workspace, "workspace");
     }
@@ -82,6 +87,8 @@ public final class RealTaskRunner implements TaskRunner {
             }
 
             Decision.Action action = (Decision.Action) decision;
+            audit.append("tool_call:" + action.toolName(), Instant.now());
+
             ToolResult result = tools.execute(new ToolCall(
                     UUID.randomUUID().toString(),
                     action.toolName(), action.argumentsJson()));

@@ -105,20 +105,31 @@ class PortTest {
 
     @Test
     void auditPortIsImplementable() {
-        List<AuditEntry> log = new ArrayList<>();
         AuditPort port = new AuditPort() {
-            @Override public void append(AuditEntry entry) {
-                log.add(entry);
+            private final List<AuditEntry> entries = new ArrayList<>();
+
+            @Override public AuditEntry append(String action, Instant at) {
+                AuditEntry e = new AuditEntry(
+                        java.util.UUID.randomUUID().toString(),
+                        action, at, "", "hash");
+                entries.add(e);
+                return e;
             }
 
             @Override public List<AuditEntry> all() {
-                return List.copyOf(log);
+                return List.copyOf(entries);
+            }
+
+            @Override public boolean verifyChain() {
+                return true;
             }
         };
 
-        port.append(new AuditEntry("a1", "login", Instant.EPOCH, "hash"));
+        AuditEntry entry = port.append("x", Instant.now());
 
+        assertThat(entry.action()).isEqualTo("x");
         assertThat(port.all()).hasSize(1);
+        assertThat(port.verifyChain()).isTrue();
     }
 
     @Test

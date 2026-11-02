@@ -131,13 +131,22 @@ class PortRecordsTest {
     @Test
     void auditEntryRejectsNulls() {
         assertThatNullPointerException()
-                .isThrownBy(() -> new AuditEntry(null, "login", Instant.EPOCH, "h"));
+                .isThrownBy(() -> new AuditEntry(null, "login", Instant.EPOCH,
+                        "", "h"));
         assertThatNullPointerException()
-                .isThrownBy(() -> new AuditEntry("a1", null, Instant.EPOCH, "h"));
+                .isThrownBy(() -> new AuditEntry("a1", null, Instant.EPOCH,
+                        "", "h"));
         assertThatNullPointerException()
-                .isThrownBy(() -> new AuditEntry("a1", "login", null, "h"));
+                .isThrownBy(() -> new AuditEntry("a1", "login", null, "", "h"));
         assertThatNullPointerException()
-                .isThrownBy(() -> new AuditEntry("a1", "login", Instant.EPOCH, null));
+                .isThrownBy(() -> new AuditEntry("a1", "login", Instant.EPOCH,
+                        "", null));
+    }
+
+    @Test
+    void auditEntryRejectsNullPreviousHash() {
+        assertThatNullPointerException().isThrownBy(() ->
+                new AuditEntry("id", "action", Instant.now(), null, "hash"));
     }
 
     @Test

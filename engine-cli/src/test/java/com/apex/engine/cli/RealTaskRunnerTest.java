@@ -1,6 +1,7 @@
 package com.apex.engine.cli;
 
 import com.apex.chat.common.identity.TenantId;
+import com.apex.engine.core.port.AuditPort;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -10,6 +11,7 @@ import com.apex.engine.core.port.model.StepLogEntry;
 import com.apex.engine.store.sqlite.SqliteStoragePort;
 import com.apex.engine.tools.impl.KernelToolExecutor;
 import com.apex.engine.tools.impl.RealPathJail;
+import com.apex.platform.audit.InMemoryAuditLog;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +39,13 @@ class RealTaskRunnerTest {
     private static final String DONE =
             "{\"done\":true,\"summary\":\"finished\"}";
     private static final TenantId TENANT = new TenantId("t-test");
+    private static final AuditPort AUDIT = new InMemoryAuditLog(auditKey());
+
+    private static byte[] auditKey() {
+        byte[] k = new byte[32];
+        java.util.Arrays.fill(k, (byte) 0x42);
+        return k;
+    }
 
     @TempDir
     Path workspace;
@@ -154,7 +163,7 @@ class RealTaskRunnerTest {
         StoragePort recorder = storage;
         RealTaskRunner runner = new RealTaskRunner(
                 new ScriptedModel(new ArrayList<>(responses)), tools, recorder,
-                TENANT, workspace);
+                AUDIT, TENANT, workspace);
         return runner.run(task);
     }
 

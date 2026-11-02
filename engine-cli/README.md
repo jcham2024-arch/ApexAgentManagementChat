@@ -34,6 +34,15 @@ Pass `--tenant <id>` or set `APEX_TENANT_ID`. Defaults to
 `cli-default`. Every `StepLogEntry` written by the runner carries this
 tenant, so cross-tenant queries cannot surface this run's steps.
 
+## Audit
+
+Every tool call is recorded in a hash-chained audit log. Production
+deployments MUST set `APEX_AUDIT_SECRET` to a value at least 32 bytes
+long. Without it, the CLI uses a hardcoded development key — the chain
+verifies, but against a public secret, so tampering cannot be
+detected. The audit log is in-memory only in S3.3; file persistence
+lands in S6.
+
 ## Task file schema (YAML)
 
 | Field | Type | Required | Notes |
