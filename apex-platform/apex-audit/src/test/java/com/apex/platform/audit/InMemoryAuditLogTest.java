@@ -82,7 +82,7 @@ class InMemoryAuditLogTest {
     }
 
     @Test
-    void redactionHappensBeforeHashing() {
+    void appendRedactsPii() {
         AuditEntry entry = log.append("login alice@example.com", BASE);
 
         assertThat(entry.action()).isEqualTo("login [EMAIL]");
