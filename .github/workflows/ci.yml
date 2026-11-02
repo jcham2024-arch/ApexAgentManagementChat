@@ -18,7 +18,11 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: mvn -B -q test
+        run: mvn -B -q install
+
+      # install (not just test) so the engine reactor can resolve the
+      # Layer 1 artifacts: apex-platform/apex-auth depends on
+      # com.apex.chat:apex-chat-common, which lives in this reactor.
 
       - name: Build and test (apex engine reactor)
         run: mvn -B -q -f apex/pom.xml test
