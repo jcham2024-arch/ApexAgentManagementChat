@@ -1,5 +1,6 @@
 package com.apex.engine.core.port;
 
+import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.model.ApprovalDecision;
 import com.apex.engine.core.port.model.ApprovalRequest;
 import com.apex.engine.planner.RiskLevel;
@@ -67,14 +68,16 @@ class PortTest {
                 stored.add(entry);
             }
 
-            @Override public List<StepLogEntry> stepsFor(String sessionId) {
+            @Override public List<StepLogEntry> stepsFor(TenantId tenantId,
+                                                         String sessionId) {
                 return List.copyOf(stored);
             }
         };
 
-        port.appendStep(new StepLogEntry("s1", "session", 0, "plan", 2L));
+        port.appendStep(new StepLogEntry("s1", new TenantId("t"), "session",
+                0, "plan", 2L));
 
-        assertThat(port.stepsFor("session")).hasSize(1);
+        assertThat(port.stepsFor(new TenantId("t"), "session")).hasSize(1);
     }
 
     @Test

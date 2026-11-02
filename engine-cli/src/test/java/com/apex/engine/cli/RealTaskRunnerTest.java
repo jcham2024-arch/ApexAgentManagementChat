@@ -1,5 +1,6 @@
 package com.apex.engine.cli;
 
+import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -35,6 +36,7 @@ class RealTaskRunnerTest {
             + "\"content\":\"Apex is a multi-agent platform.\"}}";
     private static final String DONE =
             "{\"done\":true,\"summary\":\"finished\"}";
+    private static final TenantId TENANT = new TenantId("t-test");
 
     @TempDir
     Path workspace;
@@ -137,20 +139,22 @@ class RealTaskRunnerTest {
         run(List.of(READ_ARCH, DONE), task(List.of(), List.of(), 5));
 
         String sessionId = firstSessionId();
-        List<StepLogEntry> entries = storage.stepsFor(sessionId);
+        List<StepLogEntry> entries = storage.stepsFor(TENANT, sessionId);
 
         assertThat(entries).hasSize(2);
         assertThat(entries).extracting(StepLogEntry::index)
                 .containsExactly(0, 1);
         assertThat(entries).extracting(StepLogEntry::stepType)
                 .containsExactly("action", "finish");
+        assertThat(entries).extracting(e -> e.tenantId().value())
+                .containsOnly("t-test");
     }
 
     private TaskRunResult run(List<String> responses, TaskDefinition task) {
         StoragePort recorder = storage;
         RealTaskRunner runner = new RealTaskRunner(
                 new ScriptedModel(new ArrayList<>(responses)), tools, recorder,
-                workspace);
+                TENANT, workspace);
         return runner.run(task);
     }
 

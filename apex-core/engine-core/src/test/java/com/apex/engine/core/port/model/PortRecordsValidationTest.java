@@ -1,5 +1,6 @@
 package com.apex.engine.core.port.model;
 
+import com.apex.chat.common.identity.TenantId;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * records that carry a list, a count, a duration, or a name.
  */
 class PortRecordsValidationTest {
+
+    private static final TenantId TENANT = new TenantId("t-test");
 
     @Test
     void chatRequestCopiesPromptParts() {
@@ -61,15 +64,17 @@ class PortRecordsValidationTest {
     @Test
     void stepLogEntryRejectsNegativeIndex() {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new StepLogEntry("s1", "s", -1, "plan", 0L))
-                .withMessage("index must be >= 0");
+                .isThrownBy(() -> new StepLogEntry("s1", TENANT, "s", -1,
+                        "plan", 0L))
+                .withMessage("index < 0");
     }
 
     @Test
     void stepLogEntryRejectsNegativeDuration() {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new StepLogEntry("s1", "s", 0, "plan", -1L))
-                .withMessage("durationMs must be >= 0");
+                .isThrownBy(() -> new StepLogEntry("s1", TENANT, "s", 0,
+                        "plan", -1L))
+                .withMessage("durationMs < 0");
     }
 
     @Test

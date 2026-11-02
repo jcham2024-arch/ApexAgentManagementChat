@@ -22,6 +22,14 @@
             <artifactId>engine-planner</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Layer 1 identity types (TenantId). Different reactor, so
+             real coordinates; the apex-chat reactor must be installed
+             before this one builds. -->
+        <dependency>
+            <groupId>com.apex.chat</groupId>
+            <artifactId>apex-chat-common</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>

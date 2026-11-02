@@ -28,6 +28,12 @@ java -cp engine-cli/target/engine-cli-0.1.0-SNAPSHOT.jar:<deps> \
 - Exit codes: 0 success, 1 load or run failure, 2 usage error. Only the
   JSON result goes to stdout; usage and errors go to stderr.
 
+## Tenant
+
+Pass `--tenant <id>` or set `APEX_TENANT_ID`. Defaults to
+`cli-default`. Every `StepLogEntry` written by the runner carries this
+tenant, so cross-tenant queries cannot surface this run's steps.
+
 ## Task file schema (YAML)
 
 | Field | Type | Required | Notes |

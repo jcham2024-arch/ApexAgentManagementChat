@@ -1,5 +1,6 @@
 package com.apex.engine.store.sqlite;
 
+import com.apex.chat.common.identity.TenantId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /** WAL mode must let writers and a reader share the file. */
 class SqliteStoragePortConcurrencyTest {
+
+    private static final TenantId TENANT = new TenantId("t-test");
 
     @TempDir
     Path tempDir;
@@ -59,8 +62,8 @@ class SqliteStoragePortConcurrencyTest {
             writer.get(30, TimeUnit.SECONDS);
         }
 
-        assertThat(port.stepsFor("a")).hasSize(50);
-        assertThat(port.stepsFor("b")).hasSize(50);
+        assertThat(port.stepsFor(TENANT, "a")).hasSize(50);
+        assertThat(port.stepsFor(TENANT, "b")).hasSize(50);
     }
 
     @Test
@@ -85,7 +88,7 @@ class SqliteStoragePortConcurrencyTest {
             writer.get(30, TimeUnit.SECONDS);
         }
 
-        assertThat(port.stepsFor("shared")).hasSize(100);
+        assertThat(port.stepsFor(TENANT, "shared")).hasSize(100);
     }
 
     @Test
@@ -102,7 +105,7 @@ class SqliteStoragePortConcurrencyTest {
 
         while (!appender.isDone()) {
             try {
-                int size = port.stepsFor("s").size();
+                int size = port.stepsFor(TENANT, "s").size();
                 maxSeen.accumulateAndGet(size, Math::max);
             } catch (RuntimeException e) {
                 failure.compareAndSet(null, e);
@@ -115,6 +118,6 @@ class SqliteStoragePortConcurrencyTest {
 
         assertThat(failure.get()).isNull();
         assertThat(maxSeen.get()).isLessThanOrEqualTo(100);
-        assertThat(port.stepsFor("s")).hasSize(100);
+        assertThat(port.stepsFor(TENANT, "s")).hasSize(100);
     }
 }
