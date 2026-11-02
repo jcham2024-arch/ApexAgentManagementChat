@@ -83,6 +83,7 @@ phase says so.
 | `PHASE-S2.5-STORAGE-*.md` | S2.5 — SESSION · POM-EXCEPTION · SQLITE-PORT · METADATA-TESTS · CRITERIA |
 | `PHASE-S2.6-CLI-*.md` | S2.6 — SESSION · TASK-TYPES · FIELDS · RUNNER-MAIN · METADATA · TESTS-CRITERIA |
 | `PHASE-S2.7-E2E-*.md` | S2.7 — SESSION · DECISION-PROMPT · ASSERTIONS · RUNNER · MAIN · TESTS-CRITERIA |
+| `PHASE-S3.0-PLATFORM-BOOTSTRAP-*.md` | S3.0 — SESSION · RISK-APPROVAL · PLATFORM · TESTS-CRITERIA |
 | `PHASE-S3-SECURITY.md` | S3 — auth, tenant, audit, HITL |
 | `PHASE-S4-MEMORY-SANDBOX.md` | S4 — memory router, three sandbox tiers |
 | `PHASE-S5-FLYWHEEL.md` | S5 — log → propose → gate → deploy |
@@ -127,7 +128,7 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 |---|---|---|
 | **0 — Pure core** | `apex-chat-*`, `engine-core`, `engine-planner`, `engine-tools` (ports), `engine-store` (ports), `engine-improve` | `java.base`, `org.jspecify` |
 | **1 — Local adapters** | `engine-tools` (impl), `engine-store-sqlite`, `engine-llm-http`, `apex-node` | Tier 0 + JDK IO + HTTP |
-| **2 — Enterprise adapters** | `adapter-spring-ai`, `adapter-mcp-toolbox`, `apex-platform/*`, `engine-server` | Tier 0 + Spring + Google + Jackson + Micrometer |
+| **2 — Enterprise adapters** | `adapter-spring-ai`, `adapter-mcp-toolbox`, `apex-platform` (parent; `apex-auth` JWT/RBAC, `apex-tenant` isolation/RLS, `apex-audit` chained log), `engine-server` | Tier 0 + Spring + Google + Jackson + Micrometer |
 
 A feature that requires Spring is a Tier 2 feature. It goes into an
 adapter, never into the core.

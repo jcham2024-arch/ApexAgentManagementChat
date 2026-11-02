@@ -19,4 +19,9 @@ public enum RiskLevel {
             case L5 -> 10.0;
         };
     }
+
+    /** True if this tier requires human approval before execution. */
+    public boolean requiresApproval() {
+        return this == L3 || this == L4 || this == L5;
+    }
 }
