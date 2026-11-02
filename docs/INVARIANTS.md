@@ -9,7 +9,7 @@ until its test exists and is green.
 |---|---|---|
 | K1 | No dynamic JVM classloading | S3 |
 | K2 | No shell interpolation | S2.3 |
-| K3 | Kernel invariants are compiled constants | S2.2 |
+| K3 | Kernel invariants are compiled constants | S3 (deferred — Layer 1 concept not yet in tree) |
 | K4 | Canonical workspace root via toRealPath | S3 |
 | K5 | Kill process tree via ProcessHandle.descendants | S2.3 |
 | K6 | Cooperative cancellation ≤100ms | S2.2 |
