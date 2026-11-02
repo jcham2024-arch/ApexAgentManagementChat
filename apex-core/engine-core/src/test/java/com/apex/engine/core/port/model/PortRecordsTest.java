@@ -2,6 +2,7 @@ package com.apex.engine.core.port.model;
 
 import org.junit.jupiter.api.Test;
 
+import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.planner.RiskLevel;
 
 import java.time.Instant;
@@ -16,6 +17,8 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
  * record. Constructor guards are its only behavior.
  */
 class PortRecordsTest {
+
+    private static final TenantId TENANT = new TenantId("t-test");
 
     @Test
     void chatRequestRejectsNulls() {
@@ -97,11 +100,20 @@ class PortRecordsTest {
     @Test
     void stepLogEntryRejectsNulls() {
         assertThatNullPointerException()
-                .isThrownBy(() -> new StepLogEntry(null, "s", 0, "plan", 0L));
+                .isThrownBy(() -> new StepLogEntry(null, TENANT, "s", 0,
+                        "plan", 0L));
         assertThatNullPointerException()
-                .isThrownBy(() -> new StepLogEntry("s1", null, 0, "plan", 0L));
+                .isThrownBy(() -> new StepLogEntry("s1", TENANT, null, 0,
+                        "plan", 0L));
         assertThatNullPointerException()
-                .isThrownBy(() -> new StepLogEntry("s1", "s", 0, null, 0L));
+                .isThrownBy(() -> new StepLogEntry("s1", TENANT, "s", 0, null,
+                        0L));
+    }
+
+    @Test
+    void stepLogEntryRejectsNullTenant() {
+        assertThatNullPointerException().isThrownBy(() ->
+                new StepLogEntry("id", null, "session", 0, "type", 0L));
     }
 
     @Test
