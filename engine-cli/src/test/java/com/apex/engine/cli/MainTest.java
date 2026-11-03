@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -42,7 +43,7 @@ class MainTest {
 
     @Test
     void noArgsReturnsUsageError() {
-        int code = Main.run(new String[0], Map.of(), out, err);
+        int code = Main.run(new String[0], Map.of(), stdin(), out, err);
 
         assertThat(code).isEqualTo(2);
         assertThat(stderr()).contains("usage");
@@ -50,7 +51,8 @@ class MainTest {
 
     @Test
     void extraArgsReturnsUsageError() {
-        int code = Main.run(new String[] {"a", "b"}, Map.of(), out, err);
+        int code = Main.run(new String[] {"a", "b"}, Map.of(), stdin(), out,
+                err);
 
         assertThat(code).isEqualTo(2);
         assertThat(stderr()).contains("usage");
@@ -59,7 +61,7 @@ class MainTest {
     @Test
     void missingFileReturns1() {
         int code = Main.run(new String[] {"does-not-exist.yaml"}, Map.of(),
-                out, err);
+                stdin(), out, err);
 
         assertThat(code).isEqualTo(1);
         assertThat(stderr()).contains("load failed [io]");
@@ -69,8 +71,8 @@ class MainTest {
     void validTaskReturns0AndPrintsJson() {
         Path taskFile = write(VALID_TASK);
 
-        int code = Main.run(new String[] {taskFile.toString()}, Map.of(), out,
-                err);
+        int code = Main.run(new String[] {taskFile.toString()}, Map.of(),
+                stdin(), out, err);
 
         assertThat(code).isZero();
         assertThat(stdout()).contains("\"status\":\"STUB\"");
@@ -87,12 +89,16 @@ class MainTest {
                 tools: [read_file]
                 """);
 
-        int code = Main.run(new String[] {taskFile.toString()}, Map.of(), out,
-                err);
+        int code = Main.run(new String[] {taskFile.toString()}, Map.of(),
+                stdin(), out, err);
 
         assertThat(code).isEqualTo(1);
         assertThat(stderr()).contains("task_id");
         assertThat(stdout()).isEmpty();
+    }
+
+    private static java.io.InputStream stdin() {
+        return new ByteArrayInputStream(new byte[0]);
     }
 
     private Path write(String yaml) {

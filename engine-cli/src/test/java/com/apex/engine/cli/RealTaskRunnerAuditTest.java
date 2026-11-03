@@ -1,11 +1,13 @@
 package com.apex.engine.cli;
 
 import com.apex.chat.common.identity.TenantId;
+import com.apex.engine.core.port.ApprovalPort;
 import com.apex.engine.core.port.AuditPort;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.model.AuditEntry;
 import com.apex.engine.core.port.model.ChatRequest;
 import com.apex.engine.core.port.model.ChatResponse;
+import com.apex.engine.planner.RiskLevel;
 import com.apex.engine.store.sqlite.SqliteStoragePort;
 import com.apex.engine.tools.impl.KernelToolExecutor;
 import com.apex.engine.tools.impl.RealPathJail;
@@ -27,6 +29,9 @@ class RealTaskRunnerAuditTest {
 
     private static final TenantId TENANT = new TenantId("t-audit");
     private static final byte[] AUDIT_KEY = key();
+    private static final ApprovalPort APPROVE = new AutoApprove();
+    private static final Map<String, RiskLevel> RISKS = Map.of(
+            "read_file", RiskLevel.L0);
 
     private static byte[] key() {
         byte[] k = new byte[32];
@@ -82,7 +87,7 @@ class RealTaskRunnerAuditTest {
         SqliteStoragePort storage = new SqliteStoragePort(
                 tempDir.resolve("steps.db"));
         return new RealTaskRunner(new Scripted(responses), tools, storage,
-                audit, TENANT, tempDir);
+                audit, APPROVE, RISKS, TENANT, tempDir);
     }
 
     private TaskDefinition task(String id) {
