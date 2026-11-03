@@ -96,7 +96,8 @@ abstract class E2ETestSupport {
 
     int runMain(Path taskFile) {
         return Main.run(new String[] {"--real", "--workspace",
-                workspace.toString(), taskFile.toString()}, env(), out, err);
+                workspace.toString(), taskFile.toString()}, env(),
+                new java.io.ByteArrayInputStream(new byte[0]), out, err);
     }
 
     Map<String, String> env() {
