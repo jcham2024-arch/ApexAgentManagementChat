@@ -23,6 +23,12 @@
             <artifactId>engine-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- RiskLevel is used directly by RealTaskRunner and Main. -->
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-planner</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Layer 1 identity types (TenantId); other reactor, installed
              by the root reactor before this one builds. -->
         <dependency>

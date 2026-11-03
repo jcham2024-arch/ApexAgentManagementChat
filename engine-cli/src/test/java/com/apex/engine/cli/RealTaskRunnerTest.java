@@ -1,6 +1,7 @@
 package com.apex.engine.cli;
 
 import com.apex.chat.common.identity.TenantId;
+import com.apex.engine.core.port.ApprovalPort;
 import com.apex.engine.core.port.AuditPort;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
@@ -10,6 +11,7 @@ import com.apex.engine.core.port.model.ChatResponse;
 import com.apex.engine.core.port.model.StepLogEntry;
 import com.apex.engine.store.sqlite.SqliteStoragePort;
 import com.apex.engine.tools.impl.KernelToolExecutor;
+import com.apex.engine.planner.RiskLevel;
 import com.apex.engine.tools.impl.RealPathJail;
 import com.apex.platform.audit.InMemoryAuditLog;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +42,11 @@ class RealTaskRunnerTest {
             "{\"done\":true,\"summary\":\"finished\"}";
     private static final TenantId TENANT = new TenantId("t-test");
     private static final AuditPort AUDIT = new InMemoryAuditLog(auditKey());
+    private static final ApprovalPort APPROVE = new AutoApprove();
+    private static final Map<String, RiskLevel> RISKS = Map.of(
+            "read_file",  RiskLevel.L0,
+            "write_file", RiskLevel.L1,
+            "list_files", RiskLevel.L0);
 
     private static byte[] auditKey() {
         byte[] k = new byte[32];
@@ -163,7 +170,7 @@ class RealTaskRunnerTest {
         StoragePort recorder = storage;
         RealTaskRunner runner = new RealTaskRunner(
                 new ScriptedModel(new ArrayList<>(responses)), tools, recorder,
-                AUDIT, TENANT, workspace);
+                AUDIT, APPROVE, RISKS, TENANT, workspace);
         return runner.run(task);
     }
 

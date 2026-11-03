@@ -43,6 +43,28 @@ verifies, but against a public secret, so tampering cannot be
 detected. The audit log is in-memory only in S3.3; file persistence
 lands in S6.
 
+## Human-in-the-loop approval
+
+L3+ tools (per `RiskLevel.requiresApproval()`) require approval before
+execution. The approval port is chosen by flag:
+
+- `--auto-approve` — every L3+ request is approved (CI, scripted runs)
+- default — interactive prompt on the terminal; reads from stdin,
+  writes to stderr; EOF or IO error denies
+
+Risk levels are hardcoded for now:
+
+| Tool | Risk |
+|---|---|
+| `read_file` | L0 |
+| `list_files` | L0 |
+| `write_file` | L1 |
+| `http_get` | L2 |
+| `run_command` | L4 |
+
+Unknown tools default to L3 (approval required). Tool-specific risk
+configuration lands in a later phase.
+
 ## Task file schema (YAML)
 
 | Field | Type | Required | Notes |
