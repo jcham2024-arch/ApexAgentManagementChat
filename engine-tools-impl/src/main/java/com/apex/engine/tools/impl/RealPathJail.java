@@ -2,6 +2,7 @@ package com.apex.engine.tools.impl;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
 /**
@@ -33,11 +34,16 @@ public final class RealPathJail {
             requireInside(real);
             return real;
         } catch (IOException e) {
-            throw new ToolException("path", "cannot resolve: " + candidate + ": " + e.getMessage());
+            throw new ToolException("path",
+                    "cannot resolve: " + candidate + ": " + e.getMessage(), e);
         }
     }
 
-    /** Resolves a candidate path for writing; the parent must exist. */
+    /**
+     * Resolves a candidate path for writing; the parent must exist. An
+     * existing leaf is resolved through {@link Path#toRealPath()} so a
+     * symlink pointing outside the root cannot be written through.
+     */
     public Path resolveForWrite(String candidate) {
         try {
             Path p = toAbsolute(candidate);
@@ -49,9 +55,16 @@ public final class RealPathJail {
             if (leaf == null || leaf.toString().isEmpty()) {
                 throw new ToolException("path", "no filename: " + candidate);
             }
-            return realParent.resolve(leaf);
+            Path target = realParent.resolve(leaf);
+            if (Files.exists(target, LinkOption.NOFOLLOW_LINKS)) {
+                Path real = target.toRealPath();
+                requireInside(real);
+                return real;
+            }
+            return target;
         } catch (IOException e) {
-            throw new ToolException("path", "cannot resolve: " + candidate + ": " + e.getMessage());
+            throw new ToolException("path",
+                    "cannot resolve: " + candidate + ": " + e.getMessage(), e);
         }
     }
 
