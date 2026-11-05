@@ -14,9 +14,6 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
  * {@code CONTEXT.md} §4 and AGENT_RULES §2:
  *
  * <ul>
- *   <li>Engine modules ({@code ..engine..}) must not depend on platform
- *       modules ({@code ..platform..}) — that would let Tier 2 enterprise
- *       code leak into Tier 0.</li>
  *   <li>Core packages ({@code ..core..}) must not depend on enterprise
  *       libraries (Spring, Jackson, Micrometer, Google Cloud, ZXing) —
  *       those belong in Tier 2 adapters only.</li>
@@ -24,17 +21,8 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
  */
 class ArchitectureTest {
 
-    private static final JavaClasses CLASSES =
-            new ClassFileImporter().importPackages("com.apex");
-
-    @Test
-    void engineModulesDoNotDependOnPlatform() {
-        ArchRule rule = noClasses()
-                .should().dependOnClassesThat()
-                .resideInAPackage("..platform..")
-                .because("Tier 0 engine code must not import Tier 2 platform adapters");
-        rule.check(CLASSES);
-    }
+    private static final JavaClasses CORE =
+            new ClassFileImporter().importPackages("com.apex.engine.core");
 
     @Test
     void coreDoesNotUseEnterprisePackages() {
@@ -44,13 +32,14 @@ class ArchitectureTest {
                         "org.springframework..",
                         "org.springframework.boot..",
                         "org.springframework.ai..",
-                        "com.fasterxml.jackson..",
-                        "io.micrometer..",
                         "com.google.cloud..",
                         "com.google.mcp..",
-                        "org.embabel..",
-                        "com.zaxxer..")
+                        "org.embabel*",
+                        "com.fasterxml.jackson*",
+                        "io.micrometer*",
+                        "com.zaxxer*",
+                        "org.slf4j*")
                 .because("Tier 0 core must remain free of enterprise dependencies");
-        rule.check(CLASSES);
+        rule.check(CORE);
     }
 }

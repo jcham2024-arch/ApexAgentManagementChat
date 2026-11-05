@@ -20,7 +20,7 @@
     </properties>
 
     <modules>
-        <module>apex-chat/apex-chat-common</module>
+        <module>apex-chat/apex-chat-domain</module>
     </modules>
 
     <dependencyManagement>
