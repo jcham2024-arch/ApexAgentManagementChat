@@ -6,10 +6,10 @@
 java.base + jspecify only
 
 ## Ports consumed
-none in S4.0 — S4.2 wraps StoragePort, S4.3 wraps VectorStorePort
+none
 
 ## Ports implemented
-none — MemoryRouter is a service, not a port
+none — MemoryRouter and MemoryBackend are services, not ports
 
 ## Types
 - `MemoryKind` — WORKING / EPISODIC / SEMANTIC
@@ -17,7 +17,10 @@ none — MemoryRouter is a service, not a port
 - `MemoryHit` — single result
 - `MemoryResult` — fused result set
 - `MemoryRouter` — retrieval service interface
+- `MemoryBackend` — backend contract per memory kind
 - `ContextCompactor` — history compaction interface
+- `WorkingMemoryEntry` — single working memory entry
+- `BoundedWorkingMemory` — bounded FIFO working memory backend
 
 ## Tests
-`MemoryTypesTest`
+`MemoryTypesTest` · `BoundedWorkingMemoryTest`
