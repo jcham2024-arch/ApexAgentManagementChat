@@ -130,6 +130,7 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 | Tier | Modules | Allowed dependencies |
 |---|---|---|
 | **0 — Pure core** | `apex-chat-*`, `engine-core`, `engine-planner`, `engine-tools` (ports), `engine-store` (ports), `engine-improve` | `java.base`, `org.jspecify` |
+| | *New in S3.5:* `com.apex.engine.core.invariants`, `com.apex.engine.core.guard` (two packages, `@NullMarked`, no I/O, no threading, no enterprise dependency) | |
 | **1 — Local adapters** | `engine-tools` (impl), `engine-store-sqlite`, `engine-llm-http`, `apex-node` | Tier 0 + JDK IO + HTTP |
 | **2 — Enterprise adapters** | `adapter-spring-ai`, `adapter-mcp-toolbox`, `apex-platform` (parent; `apex-auth` JWT/RBAC, `apex-tenant` isolation/RLS, `apex-audit` chained log), `engine-server` | Tier 0 + Spring + Google + Jackson + Micrometer |
 

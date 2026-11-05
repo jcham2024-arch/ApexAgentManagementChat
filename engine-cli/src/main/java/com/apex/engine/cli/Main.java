@@ -119,7 +119,7 @@ public final class Main {
                                               PrintStream err) {
         if (task.modelRoute().isBlank()) {
             err.println("real mode requires model_route in the task file");
-            return null;
+            throw new TaskLoadException("model_route", "real mode requires model_route in the task file");
         }
         try {
             ProviderConfig cfg = ProviderConfigLoader.fromMap(env);
@@ -139,7 +139,7 @@ public final class Main {
                     risks, tenant, workspace);
         } catch (Exception e) {
             err.println("adapter init failed: " + e.getMessage());
-            return null;
+            throw new TaskLoadException("adapter_init", "adapter init failed: " + e.getMessage());
         }
     }
 
