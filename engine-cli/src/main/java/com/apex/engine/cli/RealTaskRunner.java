@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -66,11 +67,19 @@ public final class RealTaskRunner implements TaskRunner {
 
         for (int step = 0; step < task.maxSteps(); step++) {
             long stepStart = System.currentTimeMillis();
-            ChatResponse resp = runModelChat(task, history);
-            if (resp == null) continue;
+            Optional<ChatResponse> respOpt = runModelChat(task, history);
+            if (respOpt.isEmpty()) {
+                return new TaskRunResult(task.taskId(), "FAILED",
+                        step, elapsed(start));
+            }
+            ChatResponse resp = respOpt.get();
 
-            Decision decision = parseDecision(resp.content());
-            if (decision == null) continue;
+            Optional<Decision> decisionOpt = parseDecision(resp.content());
+            if (decisionOpt.isEmpty()) {
+                return new TaskRunResult(task.taskId(), "PARSE_ERROR",
+                        step, elapsed(start));
+            }
+            Decision decision = decisionOpt.get();
 
             storage.appendStep(new StepLogEntry(
                     UUID.randomUUID().toString(),
@@ -121,19 +130,19 @@ public final class RealTaskRunner implements TaskRunner {
         }
     }
 
-    private ChatResponse runModelChat(TaskDefinition task, List<String> history) {
+    private Optional<ChatResponse> runModelChat(TaskDefinition task, List<String> history) {
         try {
-            return model.chat(new ChatRequest(task.modelRoute(), history));
+            return Optional.of(model.chat(new ChatRequest(task.modelRoute(), history)));
         } catch (RuntimeException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
-    private Decision parseDecision(String content) {
+    private Optional<Decision> parseDecision(String content) {
         try {
-            return parser.parse(content);
+            return Optional.of(parser.parse(content));
         } catch (RuntimeException e) {
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -145,7 +154,6 @@ public final class RealTaskRunner implements TaskRunner {
                 ok ? "COMPLETED" : "ASSERTION_FAILED",
                 step + 1, elapsed(start));
     }
-}
 
     private static long elapsed(long startMs) {
         return System.currentTimeMillis() - startMs;
