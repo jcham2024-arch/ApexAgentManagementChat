@@ -20,6 +20,7 @@
 
     <modules>
         <module>apex-chat-common</module>
+<module>apex-chat-core</module>
     </modules>
 
     <build>

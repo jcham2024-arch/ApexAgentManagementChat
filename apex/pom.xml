@@ -36,7 +36,8 @@
 <module>../engine-sandbox</module>
 <module>../engine-json</module>
         <module>../engine-cli</module>
-        <module>../apex-platform</module>
+<module>../apex-platform</module>
+<module>../apex-chat/apex-chat-core</module>
     </modules>
 
     <dependencyManagement>
