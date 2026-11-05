@@ -82,6 +82,32 @@ class InMemoryAuditLogTest {
     }
 
     @Test
+    void verifyChainDetectsTamperedEntry() throws Exception {
+        log.append("one", BASE);
+        AuditEntry original = log.append("two", BASE.plusSeconds(1));
+        log.append("three", BASE.plusSeconds(2));
+
+        assertThat(log.verifyChain()).isTrue();
+
+        // Tamper by replacing entry #2 in the internal list with a copy
+        // that has a different action. This simulates external corruption
+        // of the stored log.
+        java.lang.reflect.Field entriesField =
+                InMemoryAuditLog.class.getDeclaredField("entries");
+        entriesField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        java.util.List<AuditEntry> entries =
+                (java.util.List<AuditEntry>) entriesField.get(log);
+
+        AuditEntry tampered = new AuditEntry(
+                original.id(), "TAMPERED", original.at(),
+                original.previousHash(), original.hash());
+        entries.set(1, tampered);
+
+        assertThat(log.verifyChain()).isFalse();
+    }
+
+    @Test
     void appendRedactsPii() {
         AuditEntry entry = log.append("login alice@example.com", BASE);
 

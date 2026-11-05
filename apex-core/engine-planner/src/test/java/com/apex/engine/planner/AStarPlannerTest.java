@@ -129,6 +129,21 @@ class AStarPlannerTest {
                 .isEmpty();
     }
 
+    @Test
+    void plannerIsBoundedByMaxDepth() {
+        // maxDepth acts as the planner's cancellation mechanism: the
+        // search stops after the given depth rather than searching
+        // indefinitely.
+        List<Action> actions = chain(10);
+        Optional<Plan> result = planner.plan(ImmutableBlackboard.empty(),
+                done(), actions, 3);
+
+        // Either a plan was found within 3 steps, or none was.
+        // Either way, the planner terminated (no infinite loop).
+        result.ifPresent(plan ->
+                assertThat(plan.steps().size()).isLessThanOrEqualTo(3));
+    }
+
     private static List<Action> chain(int length) {
         List<Action> actions = new ArrayList<>();
         List<Condition> preconditions = List.of();

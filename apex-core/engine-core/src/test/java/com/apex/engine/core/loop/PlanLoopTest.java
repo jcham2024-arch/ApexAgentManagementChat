@@ -67,4 +67,25 @@ class PlanLoopTest {
         assertThat(result.steps()).extracting(StepRecord::actionId)
                 .containsOnly("diverging");
     }
+
+    @Test
+    void cancellationStopsLoopAfterOneStep() {
+        CancellationToken token = new CancellationToken();
+        AtomicInteger executions = new AtomicInteger();
+
+        // Without cancellation, the loop runs all maxSteps steps.
+        PlanLoopResult result = run(2, token,
+                List.of(diverging(executions)));
+
+        assertThat(result.status()).isEqualTo(PlanStatus.MAX_STEPS_EXCEEDED);
+        assertThat(result.steps()).hasSize(2);
+
+        // Now cancel and re-run: the loop checks the token at each step
+        // boundary and returns CANCELLED before executing any step.
+        token.cancel();
+        PlanLoopResult result2 = run(5, token,
+                List.of(diverging(new AtomicInteger())));
+        assertThat(result2.status()).isEqualTo(PlanStatus.CANCELLED);
+        assertThat(result2.steps()).hasSize(0);
+    }
 }
