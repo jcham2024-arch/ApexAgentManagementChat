@@ -8,7 +8,6 @@ import com.apex.engine.planner.Blackboard;
 import com.apex.engine.planner.Condition;
 import com.apex.engine.planner.FactCondition;
 import com.apex.engine.planner.Goal;
-import com.apex.engine.planner.ImmutableBlackboard;
 import com.apex.engine.planner.RiskLevel;
 
 import java.time.Instant;
@@ -32,7 +31,7 @@ final class LoopActions {
 
     static PlanLoopResult run(int maxSteps, CancellationToken token,
                               List<Action> actions, ChatEventSink sink) {
-        return new PlanLoop().run(ImmutableBlackboard.empty(), done(), actions,
+        return new PlanLoop().run(Blackboard.empty(), done(), actions,
                 maxSteps, token, sink);
     }
 

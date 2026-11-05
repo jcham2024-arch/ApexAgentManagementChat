@@ -46,8 +46,8 @@ class AStarPlannerTest {
         List<Action> actions = List.of(sets("a1", "done", "true"),
                 sets("a2", "done", "true"));
 
-        Optional<Plan> first = planner.plan(ImmutableBlackboard.empty(), done(), actions);
-        Optional<Plan> second = planner.plan(ImmutableBlackboard.empty(), done(), actions);
+        Optional<Plan> first = planner.plan(Blackboard.empty(), done(), actions);
+        Optional<Plan> second = planner.plan(Blackboard.empty(), done(), actions);
 
         assertThat(first).isPresent();
         assertThat(ids(first.orElseThrow())).isEqualTo(ids(second.orElseThrow()));
@@ -57,7 +57,7 @@ class AStarPlannerTest {
 
     @Test
     void goalAlreadySatisfiedYieldsEmptyPlan() {
-        Blackboard initial = ImmutableBlackboard.empty().withString("done", "true");
+        Blackboard initial = Blackboard.empty().withString("done", "true");
 
         Plan plan = planner.plan(initial, done(), List.of(sets("a1", "k", "v")))
                 .orElseThrow();
@@ -69,7 +69,7 @@ class AStarPlannerTest {
 
     @Test
     void singleActionPath() {
-        Plan plan = planner.plan(ImmutableBlackboard.empty(), done(),
+        Plan plan = planner.plan(Blackboard.empty(), done(),
                 List.of(sets("a1", "done", "true"))).orElseThrow();
 
         assertThat(ids(plan)).containsExactly("a1");
@@ -81,7 +81,7 @@ class AStarPlannerTest {
                 List.of(new FactCondition("k1", "v1")), "done", "true", 1.0,
                 RiskLevel.L0);
 
-        Plan plan = planner.plan(ImmutableBlackboard.empty(), done(),
+        Plan plan = planner.plan(Blackboard.empty(), done(),
                 List.of(sets("a1", "k1", "v1"), second)).orElseThrow();
 
         assertThat(ids(plan)).containsExactly("a1", "a2");
@@ -89,7 +89,7 @@ class AStarPlannerTest {
 
     @Test
     void noPlanPossible() {
-        assertThat(planner.plan(ImmutableBlackboard.empty(), done(),
+        assertThat(planner.plan(Blackboard.empty(), done(),
                 List.of(sets("a1", "other", "x")))).isEmpty();
     }
 
@@ -100,7 +100,7 @@ class AStarPlannerTest {
         Action safe = new StubAction("safe", List.of(), "done", "true", 1.0,
                 RiskLevel.L1);
 
-        Plan plan = planner.plan(ImmutableBlackboard.empty(), done(),
+        Plan plan = planner.plan(Blackboard.empty(), done(),
                 List.of(risky, safe)).orElseThrow();
 
         assertThat(ids(plan)).containsExactly("safe");
@@ -114,7 +114,7 @@ class AStarPlannerTest {
         Action a3 = new StubAction("a3", List.of(new FactCondition("k2", "v2")),
                 "done", "true", 3.0, RiskLevel.L0);
 
-        Plan plan = planner.plan(ImmutableBlackboard.empty(), done(),
+        Plan plan = planner.plan(Blackboard.empty(), done(),
                 List.of(a1, a2, a3)).orElseThrow();
 
         assertThat(ids(plan)).containsExactly("a1", "a2", "a3");
@@ -125,7 +125,7 @@ class AStarPlannerTest {
     void depthLimitStopsSearch() {
         List<Action> actions = chain(5);
 
-        assertThat(planner.plan(ImmutableBlackboard.empty(), done(), actions, 3))
+        assertThat(planner.plan(Blackboard.empty(), done(), actions, 3))
                 .isEmpty();
     }
 
@@ -135,7 +135,7 @@ class AStarPlannerTest {
         // search stops after the given depth rather than searching
         // indefinitely.
         List<Action> actions = chain(10);
-        Optional<Plan> result = planner.plan(ImmutableBlackboard.empty(),
+        Optional<Plan> result = planner.plan(Blackboard.empty(),
                 done(), actions, 3);
 
         // Either a plan was found within 3 steps, or none was.
