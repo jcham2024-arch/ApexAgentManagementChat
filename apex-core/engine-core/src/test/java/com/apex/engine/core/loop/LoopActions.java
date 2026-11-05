@@ -1,6 +1,7 @@
 package com.apex.engine.core.loop;
 
 import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.planner.Action;
 import com.apex.engine.planner.ActionOutput;
 import com.apex.engine.planner.Blackboard;
@@ -30,9 +31,9 @@ final class LoopActions {
     }
 
     static PlanLoopResult run(int maxSteps, CancellationToken token,
-                              List<Action> actions) {
+                              List<Action> actions, ChatEventSink sink) {
         return new PlanLoop().run(ImmutableBlackboard.empty(), done(), actions,
-                maxSteps, token);
+                maxSteps, token, sink);
     }
 
     /** One step satisfies the goal. */

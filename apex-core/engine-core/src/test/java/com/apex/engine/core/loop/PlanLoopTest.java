@@ -1,6 +1,7 @@
 package com.apex.engine.core.loop;
 
 import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.core.port.ChatEventSink;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -18,7 +19,7 @@ class PlanLoopTest {
     @Test
     void completesOnSatisfiedGoal() {
         PlanLoopResult result = run(5, new CancellationToken(),
-                List.of(reachingGoal()));
+                List.of(reachingGoal()), ChatEventSink.NOOP);
 
         assertThat(result.status()).isEqualTo(PlanStatus.COMPLETED);
         assertThat(result.steps()).hasSize(1);
@@ -28,7 +29,7 @@ class PlanLoopTest {
     @Test
     void stuckWhenNoPlanPossible() {
         PlanLoopResult result = run(5, new CancellationToken(),
-                List.of(neverReachingGoal()));
+                List.of(neverReachingGoal()), ChatEventSink.NOOP);
 
         assertThat(result.status()).isEqualTo(PlanStatus.STUCK);
         assertThat(result.steps()).isEmpty();
@@ -37,7 +38,7 @@ class PlanLoopTest {
     @Test
     void failedWhenActionFails() {
         PlanLoopResult result = run(5, new CancellationToken(),
-                List.of(failing()));
+                List.of(failing()), ChatEventSink.NOOP);
 
         assertThat(result.status()).isEqualTo(PlanStatus.FAILED);
         assertThat(result.steps()).hasSize(1);
@@ -48,7 +49,7 @@ class PlanLoopTest {
         AtomicInteger executions = new AtomicInteger();
 
         PlanLoopResult result = run(3, new CancellationToken(),
-                List.of(diverging(executions)));
+                List.of(diverging(executions)), ChatEventSink.NOOP);
 
         assertThat(result.status()).isEqualTo(PlanStatus.MAX_STEPS_EXCEEDED);
         assertThat(result.steps()).hasSize(3);
@@ -59,7 +60,7 @@ class PlanLoopTest {
         AtomicInteger executions = new AtomicInteger();
 
         PlanLoopResult result = run(3, new CancellationToken(),
-                List.of(diverging(executions)));
+                List.of(diverging(executions)), ChatEventSink.NOOP);
 
         assertThat(executions).hasValue(result.steps().size());
         assertThat(result.steps()).extracting(StepRecord::index)
@@ -75,7 +76,7 @@ class PlanLoopTest {
 
         // Without cancellation, the loop runs all maxSteps steps.
         PlanLoopResult result = run(2, token,
-                List.of(diverging(executions)));
+                List.of(diverging(executions)), ChatEventSink.NOOP);
 
         assertThat(result.status()).isEqualTo(PlanStatus.MAX_STEPS_EXCEEDED);
         assertThat(result.steps()).hasSize(2);
@@ -84,7 +85,7 @@ class PlanLoopTest {
         // boundary and returns CANCELLED before executing any step.
         token.cancel();
         PlanLoopResult result2 = run(5, token,
-                List.of(diverging(new AtomicInteger())));
+                List.of(diverging(new AtomicInteger())), ChatEventSink.NOOP);
         assertThat(result2.status()).isEqualTo(PlanStatus.CANCELLED);
         assertThat(result2.steps()).hasSize(0);
     }

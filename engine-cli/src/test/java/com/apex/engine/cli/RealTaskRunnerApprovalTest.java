@@ -2,6 +2,7 @@ package com.apex.engine.cli;
 
 import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.ApprovalPort;
+import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.core.port.model.AuditEntry;
 import com.apex.engine.core.port.model.ChatRequest;
 import com.apex.engine.planner.RiskLevel;
@@ -142,7 +143,7 @@ class RealTaskRunnerApprovalTest {
         SqliteStoragePort storage = new SqliteStoragePort(
                 tempDir.resolve("steps.db"));
         return new RealTaskRunner(model, tools, storage, audit, approval,
-                RISKS, TENANT, tempDir);
+                ChatEventSink.NOOP, RISKS, TENANT, tempDir);
     }
 
     private static TaskDefinition task(String id, String tool) {

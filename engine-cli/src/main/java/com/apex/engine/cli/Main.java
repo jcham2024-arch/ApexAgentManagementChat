@@ -3,6 +3,7 @@ package com.apex.engine.cli;
 import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.ApprovalPort;
 import com.apex.engine.core.port.AuditPort;
+import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -143,7 +144,7 @@ public final class Main {
             AuditPort audit = new InMemoryAuditLog(auditKey);
             Map<String, RiskLevel> risks = defaultRiskRegistry();
             return new RealTaskRunner(model, tools, storage, audit, approval,
-                    risks, tenant, workspace);
+                    ChatEventSink.NOOP, risks, tenant, workspace);
         } catch (Exception e) {
             err.println("adapter init failed: " + e.getMessage());
             throw new TaskLoadException("adapter_init", "adapter init failed: " + e.getMessage());
