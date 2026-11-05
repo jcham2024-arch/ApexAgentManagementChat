@@ -3,6 +3,7 @@ package com.apex.engine.cli;
 import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.ApprovalPort;
 import com.apex.engine.core.port.AuditPort;
+import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -37,6 +38,7 @@ public final class RealTaskRunner implements TaskRunner {
     private final StoragePort storage;
     private final AuditPort audit;
     private final ApprovalPort approval;
+    private final ChatEventSink sink;
     private final Map<String, RiskLevel> riskRegistry;
     private final TenantId tenantId;
     private final Path workspace;
@@ -46,7 +48,7 @@ public final class RealTaskRunner implements TaskRunner {
 
     public RealTaskRunner(ChatModelPort model, ToolExecutorPort tools,
                           StoragePort storage, AuditPort audit,
-                          ApprovalPort approval,
+                          ApprovalPort approval, ChatEventSink sink,
                           Map<String, RiskLevel> riskRegistry,
                           TenantId tenantId, Path workspace) {
         this.model = Objects.requireNonNull(model, "model");
@@ -54,6 +56,7 @@ public final class RealTaskRunner implements TaskRunner {
         this.storage = Objects.requireNonNull(storage, "storage");
         this.audit = Objects.requireNonNull(audit, "audit");
         this.approval = Objects.requireNonNull(approval, "approval");
+        this.sink = Objects.requireNonNull(sink, "sink");
         this.riskRegistry = Map.copyOf(riskRegistry);
         this.tenantId = Objects.requireNonNull(tenantId, "tenantId");
         this.workspace = Objects.requireNonNull(workspace, "workspace");
@@ -94,6 +97,8 @@ public final class RealTaskRunner implements TaskRunner {
 
             Decision.Action action = (Decision.Action) decision;
             audit.append("tool_call:" + action.toolName(), Instant.now());
+
+            sink.emit("TOOL_INVOKED", step, Instant.now());
 
             RiskLevel risk = riskRegistry.getOrDefault(
                     action.toolName(), RiskLevel.L3);

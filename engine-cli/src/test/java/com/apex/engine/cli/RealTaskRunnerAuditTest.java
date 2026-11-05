@@ -3,6 +3,7 @@ package com.apex.engine.cli;
 import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.ApprovalPort;
 import com.apex.engine.core.port.AuditPort;
+import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.model.AuditEntry;
 import com.apex.engine.core.port.model.ChatRequest;
@@ -87,7 +88,7 @@ class RealTaskRunnerAuditTest {
         SqliteStoragePort storage = new SqliteStoragePort(
                 tempDir.resolve("steps.db"));
         return new RealTaskRunner(new Scripted(responses), tools, storage,
-                audit, APPROVE, RISKS, TENANT, tempDir);
+                audit, APPROVE, ChatEventSink.NOOP, RISKS, TENANT, tempDir);
     }
 
     private TaskDefinition task(String id) {

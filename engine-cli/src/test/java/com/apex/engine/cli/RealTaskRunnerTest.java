@@ -3,6 +3,7 @@ package com.apex.engine.cli;
 import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.ApprovalPort;
 import com.apex.engine.core.port.AuditPort;
+import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.StoragePort;
 import com.apex.engine.core.port.ToolExecutorPort;
@@ -170,7 +171,7 @@ class RealTaskRunnerTest {
         StoragePort recorder = storage;
         RealTaskRunner runner = new RealTaskRunner(
                 new ScriptedModel(new ArrayList<>(responses)), tools, recorder,
-                AUDIT, APPROVE, RISKS, TENANT, workspace);
+                AUDIT, APPROVE, ChatEventSink.NOOP, RISKS, TENANT, workspace);
         return runner.run(task);
     }
 
