@@ -1,6 +1,7 @@
 package com.apex.engine.core.loop;
 
 import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.planner.Action;
 import com.apex.engine.planner.ActionOutput;
 import com.apex.engine.planner.AStarPlanner;
@@ -8,6 +9,7 @@ import com.apex.engine.planner.Blackboard;
 import com.apex.engine.planner.Goal;
 import com.apex.engine.planner.Plan;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,11 +32,12 @@ public final class PlanLoop {
 
     public PlanLoopResult run(Blackboard initial, Goal goal,
                               List<Action> actions, int maxSteps,
-                              CancellationToken token) {
+                              CancellationToken token, ChatEventSink sink) {
         Objects.requireNonNull(initial, "initial");
         Objects.requireNonNull(goal, "goal");
         Objects.requireNonNull(actions, "actions");
         Objects.requireNonNull(token, "token");
+        Objects.requireNonNull(sink, "sink");
         if (maxSteps <= 0) throw new IllegalArgumentException("maxSteps <= 0");
 
         Blackboard state = initial;
@@ -54,8 +57,13 @@ public final class PlanLoop {
             }
             Action action = next.get().steps().get(0);
 
+            int stepIndex = steps.size();
+            sink.emit("PLAN_STEP_STARTED", stepIndex, Instant.now());
+
             ActionOutput output = action.execute(state, token::isCancelled);
-            steps.add(new StepRecord(steps.size(), action.id(), output));
+            steps.add(new StepRecord(stepIndex, action.id(), output));
+
+            sink.emit("PLAN_STEP_COMPLETED", stepIndex, Instant.now());
 
             if (output instanceof ActionOutput.Failure) {
                 return new PlanLoopResult(PlanStatus.FAILED, state, steps);

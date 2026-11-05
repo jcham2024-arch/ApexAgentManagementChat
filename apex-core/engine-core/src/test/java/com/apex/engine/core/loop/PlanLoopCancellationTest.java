@@ -1,6 +1,7 @@
 package com.apex.engine.core.loop;
 
 import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.core.port.ChatEventSink;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -35,7 +36,7 @@ class PlanLoopCancellationTest {
         });
         canceller.start();
 
-        PlanLoopResult result = run(5, token, List.of(slow()));
+        PlanLoopResult result = run(5, token, List.of(slow()), ChatEventSink.NOOP);
         Instant returned = Instant.now();
 
         try {
