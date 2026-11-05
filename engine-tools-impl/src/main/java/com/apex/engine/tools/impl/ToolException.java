@@ -14,6 +14,12 @@ public final class ToolException extends RuntimeException {
         this.category = category;
     }
 
+    /** Wraps a lower-level failure; the cause is preserved, not dropped. */
+    public ToolException(String category, String message, Throwable cause) {
+        super(message, cause);
+        this.category = category;
+    }
+
     public String category() {
         return category;
     }

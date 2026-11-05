@@ -67,6 +67,17 @@ class RealPathJailTest {
     }
 
     @Test
+    void resolveForWriteRejectsSymlinkEscapingRoot() throws Exception {
+        Path outside = Files.createDirectory(
+                tempDir.resolveSibling(tempDir.getFileName() + "-write-outside"));
+        Files.createSymbolicLink(tempDir.resolve("write-escape"), outside);
+
+        assertThatThrownBy(() -> jail.resolveForWrite("write-escape"))
+                .isInstanceOf(ToolException.class)
+                .hasMessageContaining("escapes workspace");
+    }
+
+    @Test
     void resolveForWriteRejectsParentTraversal() {
         assertThatThrownBy(() -> jail.resolveForWrite("../new.txt"))
                 .isInstanceOf(ToolException.class);

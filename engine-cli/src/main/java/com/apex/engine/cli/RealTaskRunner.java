@@ -66,21 +66,11 @@ public final class RealTaskRunner implements TaskRunner {
 
         for (int step = 0; step < task.maxSteps(); step++) {
             long stepStart = System.currentTimeMillis();
-            ChatResponse resp;
-            try {
-                resp = model.chat(new ChatRequest(task.modelRoute(), history));
-            } catch (RuntimeException e) {
-                return new TaskRunResult(task.taskId(), "FAILED",
-                        step, elapsed(start));
-            }
+            ChatResponse resp = runModelChat(task, history);
+            if (resp == null) continue;
 
-            Decision decision;
-            try {
-                decision = parser.parse(resp.content());
-            } catch (RuntimeException e) {
-                return new TaskRunResult(task.taskId(), "PARSE_ERROR",
-                        step, elapsed(start));
-            }
+            Decision decision = parseDecision(resp.content());
+            if (decision == null) continue;
 
             storage.appendStep(new StepLogEntry(
                     UUID.randomUUID().toString(),
@@ -90,12 +80,7 @@ public final class RealTaskRunner implements TaskRunner {
                     System.currentTimeMillis() - stepStart));
 
             if (decision instanceof Decision.Done) {
-                List<AssertionChecker.CheckResult> checks =
-                        checker.check(workspace, task);
-                boolean ok = checker.allPassed(checks);
-                return new TaskRunResult(task.taskId(),
-                        ok ? "COMPLETED" : "ASSERTION_FAILED",
-                        step + 1, elapsed(start));
+                return runAssertions(workspace, task, step, start);
             }
 
             Decision.Action action = (Decision.Action) decision;
@@ -135,6 +120,32 @@ public final class RealTaskRunner implements TaskRunner {
             return false;
         }
     }
+
+    private ChatResponse runModelChat(TaskDefinition task, List<String> history) {
+        try {
+            return model.chat(new ChatRequest(task.modelRoute(), history));
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private Decision parseDecision(String content) {
+        try {
+            return parser.parse(content);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private TaskRunResult runAssertions(Path workspace, TaskDefinition task, int step, long start) {
+        List<AssertionChecker.CheckResult> checks =
+                checker.check(workspace, task);
+        boolean ok = checker.allPassed(checks);
+        return new TaskRunResult(task.taskId(),
+                ok ? "COMPLETED" : "ASSERTION_FAILED",
+                step + 1, elapsed(start));
+    }
+}
 
     private static long elapsed(long startMs) {
         return System.currentTimeMillis() - startMs;

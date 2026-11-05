@@ -34,7 +34,7 @@ public final class WriteFileTool implements KernelTool {
             Files.writeString(file, content, StandardCharsets.UTF_8);
             return "wrote " + content.length() + " chars to " + file;
         } catch (IOException e) {
-            throw new ToolException("write_file", "write failed: " + e.getMessage());
+            throw new ToolException("write_file", "write failed: " + e.getMessage(), e);
         }
     }
 

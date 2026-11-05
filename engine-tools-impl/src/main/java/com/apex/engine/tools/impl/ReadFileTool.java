@@ -42,7 +42,7 @@ public final class ReadFileTool implements KernelTool {
             }
             return Files.readString(file, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new ToolException("read_file", "read failed: " + e.getMessage());
+            throw new ToolException("read_file", "read failed: " + e.getMessage(), e);
         }
     }
 }

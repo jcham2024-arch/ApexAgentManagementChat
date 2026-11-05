@@ -43,7 +43,7 @@ public final class HttpGetTool implements KernelTool {
         try {
             uri = URI.create(urlStr);
         } catch (IllegalArgumentException e) {
-            throw new ToolException("http_get", "bad url: " + e.getMessage());
+            throw new ToolException("http_get", "bad url: " + e.getMessage(), e);
         }
         rejectIfUnsafe(uri.getHost());
 
@@ -73,7 +73,7 @@ public final class HttpGetTool implements KernelTool {
             return body;
         } catch (java.io.IOException | InterruptedException e) {
             if (e instanceof InterruptedException) Thread.currentThread().interrupt();
-            throw new ToolException("http_get", "request failed: " + e.getMessage());
+            throw new ToolException("http_get", "request failed: " + e.getMessage(), e);
         }
     }
 
