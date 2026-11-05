@@ -82,10 +82,17 @@ public final class Main {
                 ? new AutoApprove()
                 : new TerminalApproval(in, err);
 
-        TaskRunner runner = parsed.real()
-                ? buildRealRunner(task, env, parsed.workspace(), tenant,
-                        approval, err)
-                : new StubTaskRunner();
+        TaskRunner runner;
+        try {
+            runner = parsed.real()
+                    ? buildRealRunner(task, env, parsed.workspace(), tenant,
+                            approval, err)
+                    : new StubTaskRunner();
+        } catch (TaskLoadException e) {
+            err.println("build failed [" + e.category() + "]: "
+                    + e.getMessage());
+            return 1;
+        }
 
         if (runner == null) return 1;
 

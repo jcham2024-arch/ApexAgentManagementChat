@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class DynamicClassloadingGuardTest {
 
     @Test
-    noDefineClassInMainSources() throws Exception {
+    void noDefineClassInMainSources() throws Exception {
         Path mainSrc = Path.of("engine-core/src/main/java");
         if (!Files.exists(mainSrc)) return;
         for (File f : mainSrc.toFile().listFiles()) {
@@ -21,7 +21,7 @@ class DynamicClassloadingGuardTest {
     }
 
     @Test
-    noUrlClassloaderInMainSources() throws Exception {
+    void noUrlClassloaderInMainSources() throws Exception {
         Path mainSrc = Path.of("engine-core/src/main/java");
         if (!Files.exists(mainSrc)) return;
         for (File f : mainSrc.toFile().listFiles()) {
@@ -32,7 +32,7 @@ class DynamicClassloadingGuardTest {
     }
 
     @Test
-    noClassForNameInMainSources() throws Exception {
+    void noClassForNameInMainSources() throws Exception {
         Path mainSrc = Path.of("engine-core/src/main/java");
         if (!Files.exists(mainSrc)) return;
         for (File f : mainSrc.toFile().listFiles()) {
