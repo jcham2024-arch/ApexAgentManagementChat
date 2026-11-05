@@ -89,6 +89,8 @@ phase says so.
 | `PHASE-S3.3-AUDIT-*.md` | S3.3 — SESSION · CORE-PORT · AUDIT-CORE · AUDIT-LOG · CLI · AUDIT-TESTS · RUNNER-TESTS · CRITERIA |
 | `PHASE-S3-SECURITY.md` | S3 — auth, tenant, audit, HITL |
 | `PHASE-S4-MEMORY-SANDBOX.md` | S4 — memory router, three sandbox tiers |
+| `PHASE-S4.0-MEMORY-SANDBOX-BOOTSTRAP-*.md` | S4.0 — module skeletons, enums, interfaces |
+| `PHASE-S4.1-WORKING-MEMORY-*.md` | S4.1 — bounded working memory backend |
 | `PHASE-S5-FLYWHEEL.md` | S5 — log → propose → gate → deploy |
 | `PHASE-S6-SERVER-GUI.md` | S6 — SSE server, React chat MVP |
 | `PHASE-S7-COUNCIL.md` | S7 — confidence gate, parallel solvers |
@@ -129,9 +131,10 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 
 | Tier | Modules | Allowed dependencies |
 |---|---|---|
-| **0 — Pure core** | `apex-chat-*`, `engine-core`, `engine-planner`, `engine-tools` (ports), `engine-store` (ports), `engine-improve` | `java.base`, `org.jspecify` |
+| **0 — Pure core** | `apex-chat-*`, `engine-core`, `engine-planner`, `engine-tools` (ports), `engine-store` (ports), `engine-improve`, `engine-memory` | `java.base`, `org.jspecify` |
 | | *New in S3.5:* `com.apex.engine.core.invariants`, `com.apex.engine.core.guard` (two packages, `@NullMarked`, no I/O, no threading, no enterprise dependency) | |
-| **1 — Local adapters** | `engine-tools` (impl), `engine-store-sqlite`, `engine-llm-http`, `apex-node` | Tier 0 + JDK IO + HTTP |
+| | *New in S4.0:* `com.apex.engine.memory` (MemoryKind, MemoryQuery, MemoryHit, MemoryResult, MemoryRouter, ContextCompactor) | |
+| **1 — Local adapters** | `engine-tools` (impl), `engine-store-sqlite`, `engine-llm-http`, `apex-node`, `engine-sandbox` | Tier 0 + JDK IO + HTTP |
 | **2 — Enterprise adapters** | `adapter-spring-ai`, `adapter-mcp-toolbox`, `apex-platform` (parent; `apex-auth` JWT/RBAC, `apex-tenant` isolation/RLS, `apex-audit` chained log), `engine-server` | Tier 0 + Spring + Google + Jackson + Micrometer |
 
 A feature that requires Spring is a Tier 2 feature. It goes into an

@@ -32,6 +32,8 @@
         <module>../engine-tools-impl</module>
         <module>../engine-llm-http</module>
         <module>../engine-store-sqlite</module>
+<module>../engine-memory</module>
+<module>../engine-sandbox</module>
         <module>../engine-cli</module>
         <module>../apex-platform</module>
     </modules>
