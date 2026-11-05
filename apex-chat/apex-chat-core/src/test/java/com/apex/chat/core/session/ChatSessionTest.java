@@ -4,13 +4,15 @@ import com.apex.chat.common.identity.TenantId;
 import com.apex.chat.core.ChatSessionId;
 import com.apex.chat.core.SessionState;
 import com.apex.chat.core.event.ApprovalRequested;
-import com.apex.chat.core.event.ChatLifecycleEvent;
 import com.apex.chat.core.event.ChatEventType;
+import com.apex.chat.core.event.ChatLifecycleEvent;
 import com.apex.chat.core.event.PlanStepStarted;
+import com.apex.chat.core.event.SessionClosed;
 import com.apex.chat.core.event.SessionOpened;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -59,7 +61,7 @@ class ChatSessionTest {
     void rejectsSessionClosed() {
         ChatSession session = ChatSession.open(SESSION_ID, TENANT_ID);
         session.append(new SessionOpened(SESSION_ID, TENANT_ID, TIME, 1));
-        session.append(new com.apex.chat.core.event.SessionClosed(SESSION_ID, TENANT_ID, TIME, 2));
+        session.append(new SessionClosed(SESSION_ID, TENANT_ID, TIME, 2));
 
         assertThatThrownBy(() -> session.append(
                 new PlanStepStarted(SESSION_ID, TENANT_ID, TIME, 3, "step-1", "action-1")))
@@ -102,9 +104,9 @@ class ChatSessionTest {
         ChatSession session = ChatSession.open(SESSION_ID, TENANT_ID);
         session.append(new SessionOpened(SESSION_ID, TENANT_ID, TIME, 1));
 
-        java.util.List<com.apex.chat.core.event.ChatLifecycleEvent> events = session.events();
+        List<ChatLifecycleEvent> events = session.events();
         assertThatThrownBy(() -> events.add(null))
-                .isInstanceOf(java.lang.UnsupportedOperationException.class);
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
@@ -112,7 +114,7 @@ class ChatSessionTest {
         ChatSession session = ChatSession.open(SESSION_ID, TENANT_ID);
         session.append(new SessionOpened(SESSION_ID, TENANT_ID, TIME, 1));
 
-        com.apex.chat.core.session.ChatSessionSnapshot snapshot = session.snapshot();
+        ChatSessionSnapshot snapshot = session.snapshot();
 
         assertThat(snapshot.id()).isEqualTo(SESSION_ID);
         assertThat(snapshot.tenantId()).isEqualTo(TENANT_ID);

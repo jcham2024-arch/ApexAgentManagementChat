@@ -6,6 +6,7 @@ import com.apex.chat.core.event.SessionOpened;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -25,7 +26,7 @@ class ChatSessionStoreTest {
 
         store.save(session);
 
-        com.apex.chat.core.session.ChatSession loaded = store.load(SESSION_ID).orElseThrow();
+        ChatSession loaded = store.load(SESSION_ID).orElseThrow();
 
         assertThat(loaded.id()).isEqualTo(SESSION_ID);
         assertThat(session.tenantId()).isEqualTo(TENANT_ID);
@@ -57,7 +58,7 @@ class ChatSessionStoreTest {
         store.save(session2);
         store.save(otherSession);
 
-        java.util.List<ChatSessionId> tenantSessions = store.listByTenant(TENANT_ID);
+        List<ChatSessionId> tenantSessions = store.listByTenant(TENANT_ID);
 
         assertThat(tenantSessions).hasSize(2);
         assertThat(tenantSessions).contains(new ChatSessionId("s-1"));

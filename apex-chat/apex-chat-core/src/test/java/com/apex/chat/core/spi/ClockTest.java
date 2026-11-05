@@ -1,6 +1,5 @@
 package com.apex.chat.core.spi;
 
-import com.apex.chat.core.event.ChatLifecycleEvent;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
