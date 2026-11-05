@@ -128,8 +128,9 @@ Every session:
 3. Push the branch.
 4. Report the CI run link and status.
 5. Do not claim tests pass. Say "CI status: green" or "CI status: red"
-   with the link. The runtime cannot execute `mvn test` locally; CI is
-   the verifier.
+   with the link. Local execution of `mvn test` requires workaround flags
+   (`-Dmaven.repo.local` and `-DargLine="-Djava.io.tmpdir=..."`); see
+   `docs/LOCAL-BUILD.md`. CI remains the authoritative verifier.
 6. Stop when exit criteria are met. Report: files (paths), test count,
    CI link, judgment calls, blockers.
 

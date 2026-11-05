@@ -55,19 +55,19 @@ The authoritative domain model. Ten parts plus amendments. The phase
 file names which parts are in scope; do not read all eleven unless the
 phase says so.
 
-| File | Covers |
-|---|---|
-| `01-charter-and-principles.md` | Charter, topology, conventions |
-| `02-common-and-capability.md` | Common + capability modules |
-| `03-core-model-content-message-thinking-prompt.md` | Model, content, message, thinking, prompt |
-| `04-core-participant-thread-session-ui-guardrail.md` | Participant, thread, session, ui, guardrail |
-| `05-core-chat-subsystems.md` | Memory, workspace, artifacts, resources, turn, concurrency, orchestration |
-| `06-core-chat-container.md` | Chat aggregate, mutations, events, factories |
-| `07-tools-module.md` | Tools module |
-| `08-agent-module.md` | Agent module |
-| `09-interaction-ownership-static-dynamic.md` | Interaction, ownership, static/dynamic, portability |
-| `10-security-conventions-build-acceptance.md` | Security, conventions, build order |
-| `11-amendments.md` | Tenant scoping, prune, cost, telemetry, projection, invariants |
+| File | Covers | Status |
+|---|---|---|
+| `01-charter-and-principles.md` | Charter, topology, conventions | Present (S4 Stage 4) |
+| `02-common-and-capability.md` | Common + capability modules | Not present |
+| `03-core-model-content-message-thinking-prompt.md` | Model, content, message, thinking, prompt | Not present |
+| `04-core-participant-thread-session-ui-guardrail.md` | Participant, thread, session, ui, guardrail | Not present |
+| `05-core-chat-subsystems.md` | Memory, workspace, artifacts, resources, turn, concurrency, orchestration | Not present |
+| `06-core-chat-container.md` | Chat aggregate, mutations, events, factories | Not present |
+| `07-tools-module.md` | Tools module | Not present |
+| `08-agent-module.md` | Agent module | Not present |
+| `09-interaction-ownership-static-dynamic.md` | Interaction, ownership, static/dynamic, portability | Not present |
+| `10-security-conventions-build-acceptance.md` | Security, conventions, build order | Not present |
+| `11-amendments.md` | Tenant scoping, prune, cost, telemetry, projection, invariants | Not present |
 
 ### D. Build phase instructions — one file per session
 
@@ -87,6 +87,7 @@ phase says so.
 | `PHASE-S3.1-AUTH-*.md` | S3.1 — SESSION · POM-AND-TYPES · POLICY · JWT-FILTER · TESTS-CRITERIA |
 | `PHASE-S3.2-TENANT-*.md` | S3.2 — SESSION · CORE-PORT · SQLITE · POMS-RUNNER · CLI · TESTS · ISOLATION-CRITERIA |
 | `PHASE-S3.3-AUDIT-*.md` | S3.3 — SESSION · CORE-PORT · AUDIT-CORE · AUDIT-LOG · CLI · AUDIT-TESTS · RUNNER-TESTS · CRITERIA |
+| `PHASE-S3.4-HITL-*.md` | S3.4 — human-in-the-loop approval gating |
 | `PHASE-S3-SECURITY.md` | S3 — auth, tenant, audit, HITL |
 | `PHASE-S4-MEMORY-SANDBOX.md` | S4 — memory router, three sandbox tiers |
 | `PHASE-S4.0-MEMORY-SANDBOX-BOOTSTRAP-*.md` | S4.0 — module skeletons, enums, interfaces |
@@ -148,7 +149,8 @@ Every commit must pass all three. Failing any blocks merge.
 Banned in Tier 0 (transitively): `org.springframework*`,
 `com.google.cloud*`, `com.google.mcp*`, `org.embabel*`,
 `com.fasterxml.jackson*`, `io.micrometer*`, `com.zaxxer*`. Config lives
-in each Tier 0 module's `pom.xml`. Do not disable it.
+in the Tier 0 group parent poms (`apex-chat/pom.xml` and
+`apex-core/pom.xml`), declared once per tier group. Do not disable it.
 
 ### Gate 2 — jdeps
 CI inspects `apex-core-*.jar` for the same banned packages via `jdeps`.
