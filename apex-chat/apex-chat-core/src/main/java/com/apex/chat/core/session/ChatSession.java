@@ -30,7 +30,7 @@ public final class ChatSession {
     private SessionState state;
     private long lastSequence;
 
-    private ChatSession(ChatSessionId id, TenantId tenantId,
+    public ChatSession(ChatSessionId id, TenantId tenantId,
                         List<ChatLifecycleEvent> events,
                         SessionState state, long lastSequence) {
         this.id = id;
