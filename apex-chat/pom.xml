@@ -19,7 +19,7 @@
         enterprise ban so a Tier 1 module cannot silently inherit it.</description>
 
     <modules>
-        <module>apex-chat-common</module>
+        <module>apex-chat-domain</module>
 <module>apex-chat-core</module>
     </modules>
 
