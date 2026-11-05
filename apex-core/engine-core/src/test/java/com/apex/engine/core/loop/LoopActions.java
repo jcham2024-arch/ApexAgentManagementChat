@@ -1,6 +1,6 @@
 package com.apex.engine.core.loop;
 
-import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.planner.concurrent.CancellationToken;
 import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.planner.Action;
 import com.apex.engine.planner.ActionOutput;
@@ -13,7 +13,6 @@ import com.apex.engine.planner.RiskLevel;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BooleanSupplier;
 
 /**
  * Fake actions for the {@code PlanLoop} tests. Each one isolates a
@@ -78,11 +77,11 @@ final class LoopActions {
 
             @Override public RiskLevel riskLevel() { return RiskLevel.L0; }
 
-            @Override public ActionOutput execute(Blackboard state,
-                                                  BooleanSupplier isCancelled) {
+                        @Override public ActionOutput execute(Blackboard state,
+                                                  CancellationToken token) {
                 Instant deadline = Instant.now().plusMillis(500L);
                 while (Instant.now().isBefore(deadline)) {
-                    if (isCancelled.getAsBoolean()) {
+                    if (token.isCancelled()) {
                         return new ActionOutput.Success(state);
                     }
                     try {
@@ -132,8 +131,8 @@ final class LoopActions {
 
         @Override public RiskLevel riskLevel() { return RiskLevel.L0; }
 
-        @Override public ActionOutput execute(Blackboard state,
-                                              BooleanSupplier isCancelled) {
+                    @Override public ActionOutput execute(Blackboard state,
+                                              CancellationToken token) {
             if (executions != null) {
                 executions.incrementAndGet();
             }

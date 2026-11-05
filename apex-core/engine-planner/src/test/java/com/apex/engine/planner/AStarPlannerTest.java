@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
+import com.apex.engine.planner.concurrent.CancellationToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -24,7 +24,7 @@ class AStarPlannerTest {
         }
 
         @Override
-        public ActionOutput execute(Blackboard state, BooleanSupplier isCancelled) {
+        public ActionOutput execute(Blackboard state, CancellationToken token) {
             return new ActionOutput.Success(applyEffects(state));
         }
     }

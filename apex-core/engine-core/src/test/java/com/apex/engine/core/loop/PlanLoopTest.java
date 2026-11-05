@@ -1,6 +1,6 @@
 package com.apex.engine.core.loop;
 
-import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.planner.concurrent.CancellationToken;
 import com.apex.engine.core.port.ChatEventSink;
 import org.junit.jupiter.api.Test;
 

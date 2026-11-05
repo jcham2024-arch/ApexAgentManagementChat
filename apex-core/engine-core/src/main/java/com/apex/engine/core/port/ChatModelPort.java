@@ -1,6 +1,6 @@
 package com.apex.engine.core.port;
 
-import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.planner.concurrent.CancellationToken;
 import com.apex.engine.core.port.model.ChatChunk;
 import com.apex.engine.core.port.model.ChatRequest;
 import com.apex.engine.core.port.model.ChatResponse;
