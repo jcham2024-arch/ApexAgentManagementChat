@@ -7,7 +7,7 @@
 The behavioral contract. It carries the reading protocol, the hard
 prohibitions, the coding rules, the commit format, the verification
 protocol, and the stop triggers. Project scope and the file index live
-in `CONTEXT.md`. Phase instructions live in `PHASE-S<N>-<NAME>.md`.
+in `CONTEXT.md`. Phase instructions live in `build/PHASE-S<N>-<NAME>.md`.
 
 This file is under 200 lines and is loaded every session. It is the
 contract every phase must obey.
@@ -19,7 +19,7 @@ four are loaded.
 
 1. **This file** — behavior rules. Always.
 2. **`CONTEXT.md`** — project map and file index. Always.
-3. **`PHASE-S<N>-<NAME>.md`** — build instructions for this session.
+3. **`build/PHASE-S<N>-<NAME>.md`**** — build instructions for this session.
 4. The **spec parts** named in the phase file
    (`docs/apex-chat-spec/`).
 5. **`docs/INVARIANTS.md`** — testable claims. Reference during testing.

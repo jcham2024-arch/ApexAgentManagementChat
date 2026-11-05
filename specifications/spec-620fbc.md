@@ -88,7 +88,7 @@ Deliver these, nothing else:
 
 All paths are relative to repo root.
 
-### 4.1 `apex-chat/apex-chat-common/src/main/java/com/apex/chat/common/identity/TypedId.java`
+### 4.1 `apex-chat/apex-chat-core/src/main/java/com/apex/chat/common/identity/TypedId.java`
 
 Only if `TypedId` does not exist. Content:
 

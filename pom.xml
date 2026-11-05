@@ -20,7 +20,23 @@
     </properties>
 
     <modules>
-        <module>apex-chat/apex-chat-domain</module>
+        <module>project/apex-chat</module>
+        <module>project/apex-core</module>
+        <module>project/apex-platform</module>
+        <module>project/apex</module>
+        <module>project/engine-cli</module>
+        
+        <module>project/engine-json</module>
+        <module>project/engine-llm-http</module>
+        <module>project/engine-memory</module>
+        <module>project/engine-sandbox</module>
+        <module>project/engine-store-sqlite</module>
+        <module>project/engine-tools-impl</module>
+        
+        
+        
+        
+        
     </modules>
 
     <dependencyManagement>

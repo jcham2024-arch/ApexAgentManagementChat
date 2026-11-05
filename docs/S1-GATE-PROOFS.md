@@ -6,7 +6,7 @@ Three gates, each proven to fail on a deliberate violation.
 
 ## Proof G1 — Maven Enforcer Enterprise Ban
 
-**Violation introduced:** Added `org.springframework:spring-core:6.1.0` as a compile dependency to `apex-chat/apex-chat-common/pom.xml`.
+**Violation introduced:** Added `org.springframework:spring-core:6.1.0` as a compile dependency to `apex-chat/apex-chat-core/pom.xml`.
 
 **Command run:**
 ```bash
@@ -22,7 +22,7 @@ mvn -B validate
 [ERROR] -> [Help 1]
 ```
 
-**Revert performed:** Removed the Spring dependency from `apex-chat/apex-chat-common/pom.xml`.
+**Revert performed:** Removed the Spring dependency from `apex-chat/apex-chat-core/pom.xml`.
 
 **Verification after revert:** `mvn -B validate` → BUILD SUCCESS.
 
@@ -49,9 +49,9 @@ echo "GATE G2 PASSED"
 
 **Failure output (verbatim):**
 ```
-Inspecting ./apex-chat/apex-chat-common/target/apex-chat-common-1.0.0-SNAPSHOT.jar
+Inspecting ./apex-chat/apex-chat-core/target/apex-chat-common-1.0.0-SNAPSHOT.jar
    com.apex.chat.common.leak                          -> org.springframework.core.io                        not found
-GATE G2 FAILED: enterprise package in ./apex-chat/apex-chat-common/target/apex-chat-common-1.0.0-SNAPSHOT.jar
+GATE G2 FAILED: enterprise package in ./apex-chat/apex-chat-core/target/apex-chat-common-1.0.0-SNAPSHOT.jar
 ```
 
 **Revert performed:** Deleted `target/classes/com/apex/chat/common/leak/LeakProbe.class` and reran `mvn -B package -DskipTests`.
