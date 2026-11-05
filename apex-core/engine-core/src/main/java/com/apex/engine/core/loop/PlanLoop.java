@@ -1,6 +1,6 @@
 package com.apex.engine.core.loop;
 
-import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.planner.concurrent.CancellationToken;
 import com.apex.engine.core.port.ChatEventSink;
 import com.apex.engine.planner.Action;
 import com.apex.engine.planner.ActionOutput;
@@ -60,7 +60,7 @@ public final class PlanLoop {
             int stepIndex = steps.size();
             sink.emit("PLAN_STEP_STARTED", stepIndex, Instant.now());
 
-            ActionOutput output = action.execute(state, token::isCancelled);
+            ActionOutput output = action.execute(state, token);
             steps.add(new StepRecord(stepIndex, action.id(), output));
 
             sink.emit("PLAN_STEP_COMPLETED", stepIndex, Instant.now());

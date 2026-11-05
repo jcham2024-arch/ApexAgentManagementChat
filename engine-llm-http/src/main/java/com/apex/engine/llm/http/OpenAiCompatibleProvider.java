@@ -1,6 +1,6 @@
 package com.apex.engine.llm.http;
 
-import com.apex.engine.core.concurrent.CancellationToken;
+import com.apex.engine.planner.concurrent.CancellationToken;
 import com.apex.engine.core.port.ChatModelPort;
 import com.apex.engine.core.port.model.ChatChunk;
 import com.apex.engine.core.port.model.ChatRequest;

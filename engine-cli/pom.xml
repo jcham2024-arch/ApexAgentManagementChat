@@ -33,7 +33,7 @@
              by the root reactor before this one builds. -->
         <dependency>
             <groupId>com.apex.chat</groupId>
-            <artifactId>apex-chat-common</artifactId>
+            <artifactId>apex-domain</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>

@@ -38,6 +38,8 @@
         <module>../engine-cli</module>
 <module>../apex-platform</module>
 <module>../apex-chat/apex-chat-core</module>
+<module>../apex-chat/apex-chat-domain</module>
+<module>../apex-chat/apex-chat-store-sqlite</module>
     </modules>
 
     <dependencyManagement>
