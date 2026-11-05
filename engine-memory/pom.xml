@@ -7,6 +7,7 @@
         <groupId>com.apex</groupId>
         <artifactId>apex</artifactId>
         <version>0.1.0-SNAPSHOT</version>
+        <relativePath>apex/pom.xml</relativePath>
     </parent>
     <artifactId>engine-memory</artifactId>
     <name>Engine Memory</name>
