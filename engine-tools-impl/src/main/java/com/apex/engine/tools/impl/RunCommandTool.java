@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Runs an allowlisted binary with tokenized arguments via
  * {@link ProcessBuilder} (no shell — K2). On timeout, kills the full
- * process tree (K5). Output capped at 50 KB. Non-zero exit is an
+ * process tree (K5). Output capped at 50K chars. Non-zero exit is an
  * error.
  *
  * <p>Args: {@code cmd} (string, required — registry key),
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class RunCommandTool implements KernelTool {
 
-    private static final int OUTPUT_CAP_BYTES = 50_000;
+    private static final int OUTPUT_CAP_CHARS = 50_000;
     private static final int DEFAULT_TIMEOUT_SEC = 30;
     private static final int MAX_TIMEOUT_SEC = 120;
 
@@ -105,8 +105,8 @@ public final class RunCommandTool implements KernelTool {
             int read;
             while ((read = in.read(buffer)) >= 0) {
                 sb.append(new String(buffer, 0, read, StandardCharsets.UTF_8));
-                if (sb.length() > OUTPUT_CAP_BYTES) {
-                    sb.setLength(OUTPUT_CAP_BYTES);
+                if (sb.length() > OUTPUT_CAP_CHARS) {
+                    sb.setLength(OUTPUT_CAP_CHARS);
                     sb.append("\n[TRUNCATED]");
                     break;
                 }
