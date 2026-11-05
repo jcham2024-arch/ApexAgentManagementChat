@@ -23,6 +23,11 @@
             <artifactId>engine-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-store</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Layer 1 identity types (TenantId); other reactor, installed
              by the root reactor before this one builds. -->
         <dependency>

@@ -2,6 +2,7 @@ package com.apex.engine.store.sqlite;
 
 import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.model.StepLogEntry;
+import com.apex.engine.store.StorageException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
