@@ -3,7 +3,7 @@
 **Status:** Not present as a standalone file.
 
 Prior-repo patterns live in the untracked imports at
-`phase-plans/`, `specifications/`, `references/`, and
+`build/phase-plans/`, `specifications/`, `references/`, and
 `implementation-plans/`. Those folders contain material from related
 projects (`Google-Ai-repo`, `ApexAgentManagementChat`) and are NOT
 part of the governing build per `CONTEXT.md` §0:
