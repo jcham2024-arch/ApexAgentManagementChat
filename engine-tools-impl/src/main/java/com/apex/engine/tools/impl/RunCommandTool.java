@@ -74,7 +74,7 @@ public final class RunCommandTool implements KernelTool {
         try {
             process = pb.start();
         } catch (IOException e) {
-            throw new ToolException("run_command", "start failed: " + e.getMessage());
+            throw new ToolException("run_command", "start failed: " + e.getMessage(), e);
         }
 
         boolean finished;
@@ -112,7 +112,7 @@ public final class RunCommandTool implements KernelTool {
                 }
             }
         } catch (IOException e) {
-            throw new ToolException("run_command", "read failed: " + e.getMessage());
+            throw new ToolException("run_command", "read failed: " + e.getMessage(), e);
         }
         return sb.toString();
     }

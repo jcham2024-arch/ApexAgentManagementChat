@@ -52,7 +52,7 @@ public final class ListFilesTool implements KernelTool {
                     .sorted()
                     .collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            throw new ToolException("list_files", "list failed: " + e.getMessage());
+            throw new ToolException("list_files", "list failed: " + e.getMessage(), e);
         }
     }
 }
