@@ -1,11 +1,17 @@
 package com.apex.engine.core.loop;
 
-import com.apex.engine.planner.concurrent.CancellationToken;
+import com.apex.engine.core.PolicyEngine;
+import com.apex.engine.core.port.AuditPort;
 import com.apex.engine.core.port.ChatEventSink;
+import com.apex.engine.core.port.RuntimePolicy;
+import com.apex.engine.core.port.model.GuardrailSet;
+import com.apex.engine.core.port.model.InvariantSet;
+import com.apex.engine.core.port.model.PolicyDecision;
 import com.apex.engine.planner.Action;
 import com.apex.engine.planner.ActionOutput;
 import com.apex.engine.planner.AStarPlanner;
 import com.apex.engine.planner.Blackboard;
+import com.apex.engine.planner.concurrent.CancellationToken;
 import com.apex.engine.planner.Goal;
 import com.apex.engine.planner.Plan;
 
@@ -21,19 +27,35 @@ import java.util.Optional;
  * the cancellation token at every step boundary so cancellation is
  * observable within 100ms (K6). Stops at {@code maxSteps}.
  *
- * <p>The planner is injected via constructor so the core can be tested
- * with a mock. The concrete planner ({@link AStarPlanner}) is wired at
- * the application level. {@link Action} lives in engine-planner.
+ * <p>Before the first step executes, the loop runs a fail-closed
+ * pre-execution guard: {@link InvariantChecker} rejects structurally
+ * unsafe plans, and the injected {@link RuntimePolicy} may deny a plan
+ * deterministically. Denials are emitted to the audit chain and halt
+ * the loop with {@link PlanStatus#POLICY_DENIED} rather than throwing.
  *
- * <p>ARCHITECTURAL NOTE: The loop currently instantiates {@link
- * AStarPlanner} directly. A future refactor should introduce a
- * {@link com.apex.engine.core.port.PlannerPort} adapter that resolves
- * string-based {@link com.apex.engine.core.port.model.PlanRequest} to
- * typed {@link Goal} and {@link Action} objects.
+ * <p>The concrete planner ({@link AStarPlanner}) is wired at the
+ * application level. {@link Action} lives in engine-planner.
  */
 public final class PlanLoop {
 
     private final AStarPlanner planner = new AStarPlanner();
+    private final RuntimePolicy policy;
+    private final GuardrailSet guardrails;
+    private final InvariantSet invariants;
+    private final AuditPort audit;
+
+    public PlanLoop() {
+        this(PolicyEngine.permissive(), GuardrailSet.none(),
+                InvariantSet.empty(), null);
+    }
+
+    public PlanLoop(RuntimePolicy policy, GuardrailSet guardrails,
+                    InvariantSet invariants, AuditPort audit) {
+        this.policy = Objects.requireNonNull(policy, "policy");
+        this.guardrails = Objects.requireNonNull(guardrails, "guardrails");
+        this.invariants = Objects.requireNonNull(invariants, "invariants");
+        this.audit = audit;
+    }
 
     public PlanLoopResult run(Blackboard initial, Goal goal,
                               List<Action> actions, int maxSteps,
@@ -43,12 +65,15 @@ public final class PlanLoop {
         Objects.requireNonNull(actions, "actions");
         Objects.requireNonNull(token, "token");
         Objects.requireNonNull(sink, "sink");
-        if (maxSteps <= 0) throw new IllegalArgumentException("maxSteps <= 0");
+        int effectiveMaxSteps = Math.min(maxSteps, guardrails.maxSteps());
+        if (effectiveMaxSteps <= 0) {
+            throw new IllegalArgumentException("maxSteps <= 0");
+        }
 
         Blackboard state = initial;
-        List<StepRecord> steps = new ArrayList<>(maxSteps);
+        List<StepRecord> steps = new ArrayList<>(effectiveMaxSteps);
 
-        while (steps.size() < maxSteps) {
+        while (steps.size() < effectiveMaxSteps) {
             if (token.isCancelled()) {
                 return new PlanLoopResult(PlanStatus.CANCELLED, state, steps);
             }
@@ -60,7 +85,24 @@ public final class PlanLoop {
             if (next.isEmpty()) {
                 return new PlanLoopResult(PlanStatus.STUCK, state, steps);
             }
-            Action action = next.get().steps().get(0);
+            Plan plan = next.get();
+
+            // Fail-closed pre-execution guard: invariants + policy.
+            // Denials halt the loop deterministically with an audit entry
+            // instead of throwing, so callers observe a named outcome.
+            try {
+                InvariantChecker.check(plan, invariants);
+                PolicyDecision decision = policy.decide(plan);
+                if (!decision.allowed()) {
+                    recordDenial(plan, decision.reason());
+                    return new PlanLoopResult(PlanStatus.POLICY_DENIED, state, steps);
+                }
+            } catch (IllegalArgumentException e) {
+                recordDenial(plan, "invariant violation: " + e.getMessage());
+                return new PlanLoopResult(PlanStatus.POLICY_DENIED, state, steps);
+            }
+
+            Action action = plan.steps().get(0);
 
             int stepIndex = steps.size();
             sink.emit("PLAN_STEP_STARTED", stepIndex, Instant.now());
@@ -76,5 +118,13 @@ public final class PlanLoop {
             state = ((ActionOutput.Success) output).newState();
         }
         return new PlanLoopResult(PlanStatus.MAX_STEPS_EXCEEDED, state, steps);
+    }
+
+    private void recordDenial(Plan plan, String reason) {
+        if (audit != null) {
+            audit.append("PLAN_DENIED: " + reason + " | steps="
+                    + plan.steps().size() + " | cost=" + plan.cost(),
+                    Instant.now());
+        }
     }
 }
