@@ -18,6 +18,9 @@ The core never imports an adapter. Tiers are defined in
 | `AgentVersionStore` | `engine-store-sqlite` | — | S1 |
 | `MetricsPort` | — | `engine-metrics` | S1 |
 | `CheckpointPort` | `engine-store-sqlite` | — | S1 |
+| `SkillResolver` | — | `engine-eval` | S2 |
+| `WorkspacePort` | `engine-store-sqlite` | — | S2 |
+| `DeploymentRouter` | — | `engine-eval` | S2 |
 
 ## Adding a port
 

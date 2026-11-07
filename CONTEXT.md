@@ -130,6 +130,9 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 | `AgentVersionStore` | `engine-store-sqlite` | — |
 | `MetricsPort` | — | `engine-metrics` |
 | `CheckpointPort` | `engine-store-sqlite` | — |
+| `SkillResolver` | — | `engine-eval` |
+| `WorkspacePort` | `engine-store-sqlite` | — |
+| `DeploymentRouter` | — | `engine-eval` |
 
 ## 4. Three tiers
 
