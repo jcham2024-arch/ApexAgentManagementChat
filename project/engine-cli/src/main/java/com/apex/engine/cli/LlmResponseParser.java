@@ -1,6 +1,6 @@
 package com.apex.engine.cli;
 
-import com.apex.engine.llm.http.JsonParser;
+import com.apex.engine.json.Json;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public final class LlmResponseParser {
 
     public Decision parse(String response) {
         String json = extractJson(response);
-        Map<String, Object> root = JsonParser.parseObject(json);
+        Map<String, Object> root = Json.parseObject(json);
         if (Boolean.TRUE.equals(root.get("done"))) {
             return new Decision.Done(
                     String.valueOf(root.getOrDefault("summary", "")));

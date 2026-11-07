@@ -43,9 +43,14 @@ public final class InMemoryChatSessionStore implements ChatSessionStore {
     }
 
     @Override
-    public java.util.Optional<ChatSession> load(ChatSessionId id) {
+    public java.util.Optional<ChatSession> load(TenantId tenantId, ChatSessionId id) {
+        Objects.requireNonNull(tenantId, "tenantId");
         Objects.requireNonNull(id, "id");
-        return java.util.Optional.ofNullable(sessions.get(id));
+        ChatSession session = sessions.get(id);
+        if (session == null || !session.tenantId().equals(tenantId)) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.of(session);
     }
 
     @Override

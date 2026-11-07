@@ -165,6 +165,21 @@ public final class SqliteStoragePort implements StoragePort {
         }
     }
 
+    @Override
+    public void clear(TenantId tenantId, String sessionId) {
+        Objects.requireNonNull(tenantId, "tenantId");
+        Objects.requireNonNull(sessionId, "sessionId");
+        try (Connection conn = open();
+             PreparedStatement ps = conn.prepareStatement(
+                     "DELETE FROM step_log WHERE tenant_id = ? AND session_id = ?")) {
+            ps.setString(1, tenantId.value());
+            ps.setString(2, sessionId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new StorageException("clear", e.getMessage(), e);
+        }
+    }
+
     private static boolean isDuplicate(SQLException e) {
         return e.getErrorCode() == 19
                 || e.getMessage().toLowerCase().contains("unique");

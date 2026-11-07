@@ -7,17 +7,22 @@ export MAVEN_REPO_LOCAL=$PWD/.m2
 export Java_IO_TMPDIR=$HARNESS_SCRATCH/apex-tmp
 ```
 
-## Build Layer 1 (apex-chat)
+## Build everything (root reactor)
 
 ```bash
 cd /data/user/0/com.androidharness.app/files/github-projects/ApexAgentManagementChat-afde9c48
-mvn -B -Dmaven.repo.local=$MAVEN_REPO_LOCAL install
+mvn -B -Dmaven.repo.local=$MAVEN_REPO_LOCAL -DargLine="-Djava.io.tmpdir=$Java_IO_TMPDIR" install
 ```
+
+The root POM aggregates the group parents (`project/apex-chat`,
+`project/apex-core`, `project/apex-platform`) and the adapters with no group
+parent. Do not add `project/apex` to it: that POM re-aggregates the same
+directories and Maven then fails with `DuplicateProjectException`.
 
 ## Build Engine Reactor (all tiers)
 
 ```bash
-mvn -B -Dmaven.repo.local=$MAVEN_REPO_LOCAL -DargLine="-Djava.io.tmpdir=$Java_IO_TMPDIR" -f apex/pom.xml test
+mvn -B -Dmaven.repo.local=$MAVEN_REPO_LOCAL -DargLine="-Djava.io.tmpdir=$Java_IO_TMPDIR" -f project/apex/pom.xml test
 ```
 
 ## Verify Gates

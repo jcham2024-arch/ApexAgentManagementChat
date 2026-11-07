@@ -26,10 +26,10 @@ class ChatSessionStoreTest {
 
         store.save(session);
 
-        ChatSession loaded = store.load(SESSION_ID).orElseThrow();
+        ChatSession loaded = store.load(TENANT_ID, SESSION_ID).orElseThrow();
 
         assertThat(loaded.id()).isEqualTo(SESSION_ID);
-        assertThat(session.tenantId()).isEqualTo(TENANT_ID);
+        assertThat(loaded.tenantId()).isEqualTo(TENANT_ID);
         assertThat(loaded.events()).hasSize(1);
         assertThat(loaded.lastSequence()).isEqualTo(1);
     }
@@ -38,7 +38,7 @@ class ChatSessionStoreTest {
     void loadMissingSessionReturnsEmpty() {
         InMemoryChatSessionStore store = new InMemoryChatSessionStore();
 
-        assertThat(store.load(new ChatSessionId("missing"))).isEmpty();
+        assertThat(store.load(TENANT_ID, new ChatSessionId("missing"))).isEmpty();
     }
 
     @Test
@@ -85,8 +85,27 @@ class ChatSessionStoreTest {
     void rejectsNullSessionId() {
         InMemoryChatSessionStore store = new InMemoryChatSessionStore();
 
-        assertThatThrownBy(() -> store.load(null))
+        assertThatThrownBy(() -> store.load(TENANT_ID, null))
                 .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void rejectsNullTenantIdOnLoad() {
+        InMemoryChatSessionStore store = new InMemoryChatSessionStore();
+
+        assertThatThrownBy(() -> store.load(null, SESSION_ID))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void loadOtherTenantReturnsEmpty() {
+        InMemoryChatSessionStore store = new InMemoryChatSessionStore();
+
+        ChatSession session = ChatSession.open(SESSION_ID, TENANT_ID);
+        session.append(new SessionOpened(SESSION_ID, TENANT_ID, TIME, 1));
+        store.save(session);
+
+        assertThat(store.load(new TenantId("other"), SESSION_ID)).isEmpty();
     }
 
     @Test

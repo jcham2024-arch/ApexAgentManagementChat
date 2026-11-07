@@ -108,9 +108,9 @@ public final class EpisodicMemoryBackend implements MemoryBackend {
     }
 
     @Override
-    public void clear() {
-        throw new UnsupportedOperationException(
-                "clear() not supported: StoragePort has no delete operation");
+    public synchronized void clear() {
+        storage.clear(tenantId, sessionId);
+        nextIndex = 0;
     }
 
     private int countExistingEntries() {

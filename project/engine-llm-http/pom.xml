@@ -24,6 +24,12 @@
             <artifactId>engine-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- CancellationToken lives in engine-planner. -->
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-planner</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.apex</groupId>
             <artifactId>engine-json</artifactId>
@@ -41,6 +47,11 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -72,6 +72,10 @@ class PortTest {
                                                          String sessionId) {
                 return List.copyOf(stored);
             }
+
+            @Override public void clear(TenantId tenantId, String sessionId) {
+                stored.clear();
+            }
         };
 
         port.appendStep(new StepLogEntry("s1", new TenantId("t"), "session",

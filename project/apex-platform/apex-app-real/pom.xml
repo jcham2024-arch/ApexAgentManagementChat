@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.apex</groupId>
+        <artifactId>apex-platform</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>apex-app-real</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Apex App Real</name>
+    <description>Tier 2. Real-mode adapter wiring for the CLI entrypoint.
+        Wires engine-llm-http, engine-tools-impl, engine-store-sqlite and
+        apex-audit behind the RealTaskRunner from engine-cli. Tier 2 may
+        depend on Tier 1; Tier 1 may not depend on Tier 1.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-cli</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-llm-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-tools-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-store-sqlite</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>apex-audit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

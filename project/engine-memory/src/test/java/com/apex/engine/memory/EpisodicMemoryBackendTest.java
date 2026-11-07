@@ -36,6 +36,12 @@ class EpisodicMemoryBackendTest {
             }
             return result;
         }
+
+        @Override
+        public void clear(TenantId tenantId, String sessionId) {
+            entries.removeIf(e -> e.tenantId().equals(tenantId)
+                    && e.sessionId().equals(sessionId));
+        }
     }
 
     @Test
@@ -189,12 +195,22 @@ class EpisodicMemoryBackendTest {
     }
 
     @Test
-    void clearThrowsUnsupportedOperation() {
+    void clearRemovesAllEntries() {
         TestStoragePort storage = new TestStoragePort();
         EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
                 storage, TENANT, SESSION);
-        assertThatThrownBy(backend::clear)
-                .isInstanceOf(UnsupportedOperationException.class);
+        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
+        backend.add(new WorkingMemoryEntry("assistant", "entry one", t0));
+        backend.add(new WorkingMemoryEntry("user", "entry two", t0));
+        assertThat(backend.size()).isEqualTo(2);
+
+        backend.clear();
+        assertThat(backend.size()).isEqualTo(0);
+
+        MemoryQuery q = new MemoryQuery("entry",
+                Set.of(MemoryKind.EPISODIC), 10);
+        MemoryResult result = backend.query(q);
+        assertThat(result.hits()).isEmpty();
     }
 
     @Test

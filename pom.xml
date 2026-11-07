@@ -20,23 +20,24 @@
     </properties>
 
     <modules>
+        <!-- Group parents only: each aggregates every module in its own
+             directory (apex-chat, apex-core, apex-platform). Their children
+             must not be listed here a second time. project/apex is omitted on
+             purpose: it re-aggregates these same directories, and listing both
+             makes Maven fail with DuplicateProjectException. Build the whole
+             tree with this POM, or the engine reactor with -f project/apex/pom.xml. -->
         <module>project/apex-chat</module>
         <module>project/apex-core</module>
         <module>project/apex-platform</module>
-        <module>project/apex</module>
+        <!-- Adapters and entry points with no group parent of their own. -->
         <module>project/engine-cli</module>
-        
         <module>project/engine-json</module>
         <module>project/engine-llm-http</module>
         <module>project/engine-memory</module>
         <module>project/engine-sandbox</module>
         <module>project/engine-store-sqlite</module>
         <module>project/engine-tools-impl</module>
-        
-        
-        
-        
-        
+        <module>project/apex-chat/apex-chat-store-sqlite</module>
     </modules>
 
     <dependencyManagement>
@@ -86,7 +87,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.2.5</version>
                     <configuration>
-                        <failIfNoTests>false</failIfNoTests>
+                        <failIfNoTests>true</failIfNoTests>
                     </configuration>
                 </plugin>
             </plugins>

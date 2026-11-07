@@ -22,24 +22,28 @@
         <junit.version>5.10.2</junit.version>
         <assertj.version>3.25.3</assertj.version>
         <archunit.version>1.3.0</archunit.version>
+        <jqwik.version>1.9.2</jqwik.version>
     </properties>
 
     <modules>
-        <!-- Module directories live at the repository root, beside this
-             aggregator. Maven resolves module paths against the POM's own
-             directory, hence the ../ prefixes. -->
+        <!-- Every module below is a sibling of this aggregator under project/.
+             Maven resolves module paths against this POM's own directory, hence
+             the ../ prefixes. Keep this list out of the root pom.xml: a project
+             directory may not appear twice in one reactor, and the root POM
+             already aggregates project/apex-chat, project/apex-core and
+             project/apex-platform. -->
         <module>../apex-core</module>
-        <module>../engine-tools-impl</module>
-        <module>../engine-llm-http</module>
-        <module>../engine-store-sqlite</module>
-<module>../engine-memory</module>
-<module>../engine-sandbox</module>
-<module>../engine-json</module>
+        <module>../apex-platform</module>
+        <module>../apex-chat/apex-chat-core</module>
+        <module>../apex-chat/apex-chat-domain</module>
+        <module>../apex-chat/apex-chat-store-sqlite</module>
         <module>../engine-cli</module>
-<module>../apex-platform</module>
-<module>../apex-chat/apex-chat-core</module>
-<module>../apex-chat/apex-chat-domain</module>
-<module>../apex-chat/apex-chat-store-sqlite</module>
+        <module>../engine-json</module>
+        <module>../engine-llm-http</module>
+        <module>../engine-memory</module>
+        <module>../engine-sandbox</module>
+        <module>../engine-store-sqlite</module>
+        <module>../engine-tools-impl</module>
     </modules>
 
     <dependencyManagement>
@@ -69,6 +73,12 @@
                 <version>${archunit.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>net.jqwik</groupId>
+                <artifactId>jqwik</artifactId>
+                <version>${jqwik.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -89,7 +99,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${surefire.version}</version>
                     <configuration>
-                        <failIfNoTests>false</failIfNoTests>
+                        <failIfNoTests>true</failIfNoTests>
                         <argLine>${argLine}</argLine>
                     </configuration>
                 </plugin>

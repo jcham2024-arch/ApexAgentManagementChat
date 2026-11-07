@@ -19,10 +19,12 @@ public interface ChatSessionStore {
     void save(ChatSession session);
 
     /**
-     * Loads a session by ID. Returns {@link java.util.Optional#empty()}
-     * if no session exists with the given ID.
+     * Loads a session by ID for the given tenant. Returns
+     * {@link java.util.Optional#empty()} if no session exists with the
+     * given ID and tenant. Implementations must filter by {@code tenant_id}
+     * so a query for tenant A never returns sessions written by tenant B.
      */
-    java.util.Optional<ChatSession> load(ChatSessionId id);
+    java.util.Optional<ChatSession> load(TenantId tenantId, ChatSessionId id);
 
     /**
      * Returns all session IDs for the given tenant. The list may be

@@ -44,7 +44,12 @@ public final class SimpleMemoryRouter implements MemoryRouter {
                 MemoryResult result = backend.query(query);
                 queried.addAll(result.queried());
                 for (MemoryHit hit : result.hits()) {
-                    String key = kind + "|" + hit.source() + "|" + hit.content();
+                    // Dedup key uses \u0001 (unit separator) as delimiter so
+                    // it cannot collide with pipe characters in source or
+                    // content. Keep the first-seen hit per key; hits are
+                    // sorted by score after collection so the highest-scored
+                    // hit for a given key wins.
+                    String key = kind + "\u0001" + hit.source() + "\u0001" + hit.content();
                     if (seen.add(key)) {
                         hits.add(hit);
                     }
@@ -54,6 +59,8 @@ public final class SimpleMemoryRouter implements MemoryRouter {
             }
         }
 
+        // Sort by descending score so the highest-scored hit for each
+        // dedup key is retained when capping.
         hits.sort((a, b) -> Double.compare(b.score(), a.score()));
         int maxHits = Math.min(hits.size(), query.maxHits());
         List<MemoryHit> capped = hits.subList(0, maxHits);

@@ -25,11 +25,11 @@ class CorePurityTest {
                         "org.springframework.ai..",
                         "com.google.cloud..",
                         "com.google.mcp..",
-                        "org.embabel*",
-                        "com.fasterxml.jackson*",
-                        "io.micrometer*",
-                        "com.zaxxer*",
-                        "org.slf4j*")
+                        "org.embabel..",
+                        "com.fasterxml.jackson..",
+                        "io.micrometer..",
+                        "com.zaxxer..",
+                        "org.slf4j..")
                 .because("Tier 0 core must remain free of enterprise dependencies");
         rule.check(CORE);
     }

@@ -1,0 +1,213 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] Apex Chat Parent                                                   [pom]
+[INFO] Apex Domain                                                        [jar]
+[INFO] Apex Core (Tier 0 group parent)                                    [pom]
+[INFO] Engine Planner                                                     [jar]
+[INFO] Engine Core                                                        [jar]
+[INFO] Engine JSON                                                        [jar]
+[INFO] Apex Chat Core                                                     [jar]
+[INFO] Engine Store                                                       [jar]
+[INFO] Engine Store SQLite                                                [jar]
+[INFO] Apex Chat Store SQLite                                             [jar]
+[INFO] Apex Chat (Tier 0 group parent)                                    [pom]
+[INFO] Engine Tools                                                       [jar]
+[INFO] Apex Platform (Tier 2 group parent)                                [pom]
+[INFO] Apex Auth                                                          [jar]
+[INFO] Apex Tenant                                                        [jar]
+[INFO] Apex Audit                                                         [jar]
+[INFO] Engine LLM HTTP                                                    [jar]
+[INFO] Engine Tools Impl                                                  [jar]
+[INFO] Engine CLI                                                         [jar]
+[INFO] Engine Memory                                                      [jar]
+[INFO] Engine Sandbox                                                     [jar]
+[INFO] 
+[INFO] ----------------------< com.apex.chat:apex-chat >-----------------------
+[INFO] Building Apex Chat Parent 1.0.0-SNAPSHOT                          [1/21]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] Loaded 24370 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ apex-chat ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] ---------------------< com.apex.chat:apex-domain >----------------------
+[INFO] Building Apex Domain 1.0.0-SNAPSHOT                               [2/21]
+[INFO]   from project/apex-chat/apex-chat-domain/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ apex-domain ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] -------------------------< com.apex:apex-core >-------------------------
+[INFO] Building Apex Core (Tier 0 group parent) 0.1.0-SNAPSHOT           [3/21]
+[INFO]   from project/apex-core/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ apex-core ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] ----------------------< com.apex:engine-planner >-----------------------
+[INFO] Building Engine Planner 0.1.0-SNAPSHOT                            [4/21]
+[INFO]   from project/apex-core/engine-planner/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-planner ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] ------------------------< com.apex:engine-core >------------------------
+[INFO] Building Engine Core 0.1.0-SNAPSHOT                               [5/21]
+[INFO]   from project/apex-core/engine-core/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-core ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] ------------------------< com.apex:engine-json >------------------------
+[INFO] Building Engine JSON 0.1.0-SNAPSHOT                               [6/21]
+[INFO]   from project/engine-json/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-json ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --------------------< com.apex.chat:apex-chat-core >--------------------
+[INFO] Building Apex Chat Core 1.0.0-SNAPSHOT                            [7/21]
+[INFO]   from project/apex-chat/apex-chat-core/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ apex-chat-core ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] -----------------------< com.apex:engine-store >------------------------
+[INFO] Building Engine Store 0.1.0-SNAPSHOT                              [8/21]
+[INFO]   from project/apex-core/engine-store/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-store ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] --------------------< com.apex:engine-store-sqlite >--------------------
+[INFO] Building Engine Store SQLite 0.1.0-SNAPSHOT                       [9/21]
+[INFO]   from project/engine-store-sqlite/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-store-sqlite ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] ----------------< com.apex.chat:apex-chat-store-sqlite >----------------
+[INFO] Building Apex Chat Store SQLite 1.0.0-SNAPSHOT                   [10/21]
+[INFO]   from project/apex-chat/apex-chat-store-sqlite/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ apex-chat-store-sqlite ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] -------------------------< com.apex:apex-chat >-------------------------
+[INFO] Building Apex Chat (Tier 0 group parent) 0.1.0-SNAPSHOT          [11/21]
+[INFO]   from project/apex-chat/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ apex-chat ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] -----------------------< com.apex:engine-tools >------------------------
+[INFO] Building Engine Tools 0.1.0-SNAPSHOT                             [12/21]
+[INFO]   from project/apex-core/engine-tools/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-tools ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] -----------------------< com.apex:apex-platform >-----------------------
+[INFO] Building Apex Platform (Tier 2 group parent) 0.1.0-SNAPSHOT      [13/21]
+[INFO]   from project/apex-platform/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] -------------------------< com.apex:apex-auth >-------------------------
+[INFO] Building Apex Auth 0.1.0-SNAPSHOT                                [14/21]
+[INFO]   from project/apex-platform/apex-auth/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] ------------------------< com.apex:apex-tenant >------------------------
+[INFO] Building Apex Tenant 0.1.0-SNAPSHOT                              [15/21]
+[INFO]   from project/apex-platform/apex-tenant/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] ------------------------< com.apex:apex-audit >-------------------------
+[INFO] Building Apex Audit 0.1.0-SNAPSHOT                               [16/21]
+[INFO]   from project/apex-platform/apex-audit/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] ----------------------< com.apex:engine-llm-http >----------------------
+[INFO] Building Engine LLM HTTP 0.1.0-SNAPSHOT                          [17/21]
+[INFO]   from project/engine-llm-http/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-llm-http ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] ---------------------< com.apex:engine-tools-impl >---------------------
+[INFO] Building Engine Tools Impl 0.1.0-SNAPSHOT                        [18/21]
+[INFO]   from project/engine-tools-impl/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-tools-impl ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] ------------------------< com.apex:engine-cli >-------------------------
+[INFO] Building Engine CLI 0.1.0-SNAPSHOT                               [19/21]
+[INFO]   from project/engine-cli/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-cli ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] -----------------------< com.apex:engine-memory >-----------------------
+[INFO] Building Engine Memory 0.1.0-SNAPSHOT                            [20/21]
+[INFO]   from project/engine-memory/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-memory ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] 
+[INFO] ----------------------< com.apex:engine-sandbox >-----------------------
+[INFO] Building Engine Sandbox 0.1.0-SNAPSHOT                           [21/21]
+[INFO]   from project/engine-sandbox/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (ban-enterprise-in-tier-0) @ engine-sandbox ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.dependency.BannedDependencies passed
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] Apex Chat Parent 1.0.0-SNAPSHOT .................... SUCCESS [  0.268 s]
+[INFO] Apex Domain 1.0.0-SNAPSHOT ......................... SUCCESS [  0.055 s]
+[INFO] Apex Core (Tier 0 group parent) 0.1.0-SNAPSHOT ..... SUCCESS [  0.004 s]
+[INFO] Engine Planner 0.1.0-SNAPSHOT ...................... SUCCESS [  0.017 s]
+[INFO] Engine Core 0.1.0-SNAPSHOT ......................... SUCCESS [  0.013 s]
+[INFO] Engine JSON 0.1.0-SNAPSHOT ......................... SUCCESS [  0.010 s]
+[INFO] Apex Chat Core 1.0.0-SNAPSHOT ...................... SUCCESS [  0.010 s]
+[INFO] Engine Store 0.1.0-SNAPSHOT ........................ SUCCESS [  0.008 s]
+[INFO] Engine Store SQLite 0.1.0-SNAPSHOT ................. SUCCESS [  0.014 s]
+[INFO] Apex Chat Store SQLite 1.0.0-SNAPSHOT .............. SUCCESS [  0.010 s]
+[INFO] Apex Chat (Tier 0 group parent) 0.1.0-SNAPSHOT ..... SUCCESS [  0.004 s]
+[INFO] Engine Tools 0.1.0-SNAPSHOT ........................ SUCCESS [  0.006 s]
+[INFO] Apex Platform (Tier 2 group parent) 0.1.0-SNAPSHOT . SUCCESS [  0.001 s]
+[INFO] Apex Auth 0.1.0-SNAPSHOT ........................... SUCCESS [  0.001 s]
+[INFO] Apex Tenant 0.1.0-SNAPSHOT ......................... SUCCESS [  0.001 s]
+[INFO] Apex Audit 0.1.0-SNAPSHOT .......................... SUCCESS [  0.002 s]
+[INFO] Engine LLM HTTP 0.1.0-SNAPSHOT ..................... SUCCESS [  0.007 s]
+[INFO] Engine Tools Impl 0.1.0-SNAPSHOT ................... SUCCESS [  0.007 s]
+[INFO] Engine CLI 0.1.0-SNAPSHOT .......................... SUCCESS [  0.011 s]
+[INFO] Engine Memory 0.1.0-SNAPSHOT ....................... SUCCESS [  0.014 s]
+[INFO] Engine Sandbox 0.1.0-SNAPSHOT ...................... SUCCESS [  0.008 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  0.577 s
+[INFO] Finished at: 2026-11-05T21:58:48Z
+[INFO] ------------------------------------------------------------------------

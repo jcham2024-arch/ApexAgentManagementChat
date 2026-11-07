@@ -14,4 +14,5 @@ import java.util.List;
 public interface StoragePort {
     void appendStep(StepLogEntry entry);
     List<StepLogEntry> stepsFor(TenantId tenantId, String sessionId);
+    void clear(TenantId tenantId, String sessionId);
 }

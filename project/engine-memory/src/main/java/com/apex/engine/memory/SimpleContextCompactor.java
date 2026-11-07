@@ -39,7 +39,9 @@ public final class SimpleContextCompactor implements ContextCompactor {
         }
 
         int total = tokenSize(history);
-        if (total <= maxTokens) {
+        int systemSize = history.isEmpty() ? 0 : history.get(0).length();
+        // SYSTEM (index 0) never counts against the token budget.
+        if (total - systemSize <= maxTokens) {
             return List.copyOf(history);
         }
 

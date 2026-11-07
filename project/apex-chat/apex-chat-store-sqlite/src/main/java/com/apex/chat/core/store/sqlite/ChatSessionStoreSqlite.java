@@ -66,14 +66,15 @@ public final class ChatSessionStoreSqlite implements ChatSessionStore {
     private static final String SELECT_SESSION = """
             SELECT session_id, tenant_id, state, last_sequence
             FROM chat_sessions
-            WHERE session_id = ?
+            WHERE session_id = ? AND tenant_id = ?
             """;
 
     private static final String SELECT_EVENTS = """
-            SELECT sequence, event_type, event_json
-            FROM chat_events
-            WHERE session_id = ?
-            ORDER BY sequence
+            SELECT e.sequence, e.event_type, e.event_json
+            FROM chat_events e
+            JOIN chat_sessions s ON e.session_id = s.session_id
+            WHERE e.session_id = ? AND s.tenant_id = ?
+            ORDER BY e.sequence
             """;
 
     private static final String SELECT_TENANT_SESSIONS = """
@@ -91,7 +92,13 @@ public final class ChatSessionStoreSqlite implements ChatSessionStore {
     }
 
     private Connection open() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+        Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+        try (Statement st = conn.createStatement()) {
+            st.execute("PRAGMA journal_mode=WAL");
+            st.execute("PRAGMA busy_timeout=5000");
+            st.execute("PRAGMA foreign_keys=ON");
+        }
+        return conn;
     }
 
     private void initSchema() {
@@ -156,34 +163,31 @@ public final class ChatSessionStoreSqlite implements ChatSessionStore {
     }
 
     @Override
-    public java.util.Optional<ChatSession> load(ChatSessionId id) {
+    public java.util.Optional<ChatSession> load(TenantId tenantId, ChatSessionId id) {
+        Objects.requireNonNull(tenantId, "tenantId");
         Objects.requireNonNull(id, "id");
 
         try (Connection conn = open()) {
-            // Load session row
-            ChatSessionId sessionId = id;
-            TenantId tenantId = null;
+            // Load session row, tenant-scoped
             SessionState state = null;
             long lastSequence = 0;
             try (PreparedStatement ps = conn.prepareStatement(SELECT_SESSION)) {
                 ps.setString(1, id.value());
+                ps.setString(2, tenantId.value());
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        tenantId = new TenantId(rs.getString("tenant_id"));
-                        state = SessionState.valueOf(rs.getString("state"));
-                        lastSequence = rs.getLong("last_sequence");
+                    if (!rs.next()) {
+                        return java.util.Optional.empty();
                     }
+                    state = SessionState.valueOf(rs.getString("state"));
+                    lastSequence = rs.getLong("last_sequence");
                 }
             }
 
-            if (sessionId == null || tenantId == null || state == null) {
-                return java.util.Optional.empty();
-            }
-
-            // Load events
+            // Load events, tenant-scoped via join
             List<com.apex.chat.core.event.ChatLifecycleEvent> events = new ArrayList<>();
             try (PreparedStatement ps = conn.prepareStatement(SELECT_EVENTS)) {
                 ps.setString(1, id.value());
+                ps.setString(2, tenantId.value());
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         int sequence = rs.getInt("sequence");
@@ -196,7 +200,7 @@ public final class ChatSessionStoreSqlite implements ChatSessionStore {
                 }
             }
 
-            return java.util.Optional.of(new ChatSession(sessionId, tenantId, events, state, lastSequence));
+            return java.util.Optional.of(new ChatSession(id, tenantId, events, state, lastSequence));
         } catch (SQLException e) {
             throw new StorageException("query", "failed to load session " + id, e);
         }

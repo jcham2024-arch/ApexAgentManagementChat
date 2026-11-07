@@ -104,6 +104,9 @@ public final class Json {
                     case 'r': sb.append('\r'); break;
                     case 't': sb.append('\t'); break;
                     case 'u':
+                        if (pos + 4 > input.length()) {
+                            throw new JsonException("unterminated unicode escape at " + (pos - 1));
+                        }
                         String hex = input.substring(pos, pos + 4);
                         sb.append((char) Integer.parseInt(hex, 16));
                         pos += 4;
@@ -140,7 +143,7 @@ public final class Json {
             try {
                 return Double.parseDouble(num);
             } catch (NumberFormatException e2) {
-                throw new JsonException("bad number: " + num);
+                throw new JsonException("bad number: " + num, e2);
             }
         }
     }
@@ -197,6 +200,7 @@ public final class Json {
         return sb.toString();
     }
 
+    @SuppressWarnings("unchecked")
     private static String valueToJson(Object value) {
         if (value == null) {
             return "null";

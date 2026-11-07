@@ -38,22 +38,7 @@
         </dependency>
         <dependency>
             <groupId>com.apex</groupId>
-            <artifactId>engine-llm-http</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.apex</groupId>
-            <artifactId>engine-tools-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.apex</groupId>
-            <artifactId>engine-store-sqlite</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.apex</groupId>
-            <artifactId>apex-audit</artifactId>
+            <artifactId>engine-json</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

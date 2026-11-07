@@ -88,7 +88,7 @@ class ChatSessionStoreSqliteTest {
 
         store.save(session);
 
-        ChatSession loaded = store.load(SESSION_ID).orElseThrow();
+        ChatSession loaded = store.load(TENANT_ID, SESSION_ID).orElseThrow();
 
         assertThat(loaded.id()).isEqualTo(SESSION_ID);
         assertThat(loaded.tenantId()).isEqualTo(TENANT_ID);
@@ -107,7 +107,7 @@ class ChatSessionStoreSqliteTest {
 
     @Test
     void loadMissingSessionReturnsEmpty() {
-        assertThat(store.load(new ChatSessionId("missing"))).isEmpty();
+        assertThat(store.load(TENANT_ID, new ChatSessionId("missing"))).isEmpty();
     }
 
     @Test
@@ -147,7 +147,7 @@ class ChatSessionStoreSqliteTest {
 
         store.save(session);
 
-        ChatSession loaded = store.load(SESSION_ID).orElseThrow();
+        ChatSession loaded = store.load(TENANT_ID, SESSION_ID).orElseThrow();
         List<ChatLifecycleEvent> events = loaded.events();
 
         assertThat(events).hasSize(3);
@@ -168,7 +168,7 @@ class ChatSessionStoreSqliteTest {
 
         store.save(session);
 
-        ChatSession loaded = store.load(SESSION_ID).orElseThrow();
+        ChatSession loaded = store.load(TENANT_ID, SESSION_ID).orElseThrow();
         assertThat(loaded.state()).isEqualTo(SessionState.FAILED);
         assertThat(loaded.lastSequence()).isEqualTo(2);
 
@@ -185,7 +185,7 @@ class ChatSessionStoreSqliteTest {
 
         // Create a new store instance pointing to the same DB
         ChatSessionStore store2 = new ChatSessionStoreSqlite(dbPath);
-        ChatSession loaded = store2.load(SESSION_ID).orElseThrow();
+        ChatSession loaded = store2.load(TENANT_ID, SESSION_ID).orElseThrow();
 
         assertThat(loaded.id()).isEqualTo(SESSION_ID);
         assertThat(loaded.lastSequence()).isEqualTo(1);
@@ -200,8 +200,23 @@ class ChatSessionStoreSqliteTest {
 
     @Test
     void rejectsNullSessionId() {
-        assertThatThrownBy(() -> store.load(null))
+        assertThatThrownBy(() -> store.load(TENANT_ID, null))
                 .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void rejectsNullTenantIdOnLoad() {
+        assertThatThrownBy(() -> store.load(null, SESSION_ID))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void loadOtherTenantReturnsEmpty() {
+        ChatSession session = ChatSession.open(SESSION_ID, TENANT_ID);
+        session.append(sessionOpened(SESSION_ID, TENANT_ID, 1));
+        store.save(session);
+
+        assertThat(store.load(new TenantId("other"), SESSION_ID)).isEmpty();
     }
 
     @Test
@@ -220,7 +235,7 @@ class ChatSessionStoreSqliteTest {
         session.append(planStepStarted(SESSION_ID, TENANT_ID, 2, "step-1", "action-1"));
         store.save(session);
 
-        ChatSession loaded = store.load(SESSION_ID).orElseThrow();
+        ChatSession loaded = store.load(TENANT_ID, SESSION_ID).orElseThrow();
         assertThat(loaded.lastSequence()).isEqualTo(2);
         assertThat(loaded.events()).hasSize(2);
     }

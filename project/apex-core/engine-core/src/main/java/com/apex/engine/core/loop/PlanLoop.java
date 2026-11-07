@@ -21,10 +21,11 @@ import java.util.Optional;
  * the cancellation token at every step boundary so cancellation is
  * observable within 100ms (K6). Stops at {@code maxSteps}.
  *
- * <p>The action receives {@code token::isCancelled} rather than the
- * token itself: {@link Action} lives in engine-planner, which cannot
- * name this module's {@link CancellationToken}. See the note on that
- * class for the fix.
+ * <p>The action receives the cancellation {@link CancellationToken}
+ * directly and must check {@link CancellationToken#isCancelled()} at
+ * safe points. {@link Action} lives in engine-planner, which cannot
+ * name this module's {@link CancellationToken} by direct import because
+ * engine-planner does not depend on engine-core.
  */
 public final class PlanLoop {
 

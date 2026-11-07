@@ -120,8 +120,8 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 |---|---|---|
 | `ChatModelPort` | `engine-llm-http` | `adapter-spring-ai` |
 | `PlannerPort` | `engine-planner` (A*) | `adapter-spring-ai` (Supervisor) |
-| `ToolExecutorPort` | `engine-tools` | `engine-tools-spring` |
-| `ApprovalPort` | `engine-approval-cli` | `adapter-spring-ai` (SSE) |
+| `ToolExecutorPort` | `engine-tools-impl` | `engine-tools-spring` |
+| `ApprovalPort` | `engine-cli` (terminal) | `adapter-spring-ai` (SSE) |
 | `StoragePort` | `engine-store-sqlite` | `adapter-spring-jdbc` |
 | `VectorStorePort` | `engine-store-sqlite-vss` | `adapter-spring-ai` (pgvector) |
 | `SecretsPort` | `SecretsPort-env` | `adapter-spring-vault` |
@@ -132,7 +132,7 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 
 | Tier | Modules | Allowed dependencies |
 |---|---|---|
-| **0 — Pure core** | `apex-chat-*`, `engine-core`, `engine-planner`, `engine-tools` (ports), `engine-store` (ports), `engine-improve`, `engine-memory` | `java.base`, `org.jspecify` |
+| **0 — Pure core** | `apex-chat-common`, `apex-chat-core`, `apex-chat-domain`, `engine-core`, `engine-planner`, `engine-tools` (ports), `engine-store` (ports), `engine-memory` | `java.base`, `org.jspecify` |
 | | *New in S3.5:* `com.apex.engine.core.invariants`, `com.apex.engine.core.guard` (two packages, `@NullMarked`, no I/O, no threading, no enterprise dependency) | |
 | | *New in S4.0:* `com.apex.engine.memory` (MemoryKind, MemoryQuery, MemoryHit, MemoryResult, MemoryRouter, ContextCompactor) | |
 | **1 — Local adapters** | `engine-tools` (impl), `engine-store-sqlite`, `engine-llm-http`, `apex-node`, `engine-sandbox` | Tier 0 + JDK IO + HTTP |

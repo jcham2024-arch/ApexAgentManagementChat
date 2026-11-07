@@ -20,7 +20,7 @@
 
     <modules>
         <module>apex-chat-domain</module>
-<module>apex-chat-core</module>
+        <module>apex-chat-core</module>
     </modules>
 
     <build>
