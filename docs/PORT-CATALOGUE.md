@@ -21,6 +21,7 @@ The core never imports an adapter. Tiers are defined in
 | `SkillResolver` | — | `engine-eval` | S2 |
 | `WorkspacePort` | `engine-store-sqlite` | — | S2 |
 | `DeploymentRouter` | — | `engine-eval` | S2 |
+| `EvaluationProbe` | — | `engine-eval` | S2 |
 
 ## Adding a port
 

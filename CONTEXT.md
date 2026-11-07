@@ -133,6 +133,7 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 | `SkillResolver` | — | `engine-eval` |
 | `WorkspacePort` | `engine-store-sqlite` | — |
 | `DeploymentRouter` | — | `engine-eval` |
+| `EvaluationProbe` | — | `engine-eval` |
 
 ## 4. Three tiers
 

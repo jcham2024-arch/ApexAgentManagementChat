@@ -7,9 +7,12 @@ import com.apex.engine.core.port.model.AuditEntry;
 import com.apex.engine.core.port.model.ChatRequest;
 import com.apex.engine.core.port.model.ChatResponse;
 import com.apex.engine.core.port.DeploymentRouter;
+import com.apex.engine.core.port.EvaluationProbe;
 import com.apex.engine.core.port.model.DeploymentSlot;
+import com.apex.engine.core.port.model.EvaluationProbeResult;
 import com.apex.engine.core.port.model.PlanRequest;
 import com.apex.engine.core.port.model.PlanResult;
+import com.apex.engine.core.port.model.PlanTrace;
 import com.apex.engine.core.port.model.SecretRef;
 import com.apex.engine.core.port.model.SkillManifest;
 import com.apex.engine.core.port.model.StepLogEntry;
@@ -239,5 +242,27 @@ class PortTest {
                 .isIn(DeploymentSlot.STAGING, DeploymentSlot.PRODUCTION);
         assertThat(port.currentSlot())
                 .isEqualTo(DeploymentSlot.PRODUCTION);
+    }
+
+    @Test
+    void evaluationProbePortIsImplementable() {
+        EvaluationProbe port = new EvaluationProbe() {
+            @Override public EvaluationProbeResult evaluate(PlanTrace trace) {
+                return new EvaluationProbeResult("test-probe", 0.8, true,
+                        "good", Map.of());
+            }
+
+            @Override public String name() {
+                return "test-probe";
+            }
+        };
+
+        PlanTrace trace = new PlanTrace("session-1", "manifest-1",
+                List.of(), null);
+        EvaluationProbeResult result = port.evaluate(trace);
+
+        assertThat(result.probeName()).isEqualTo("test-probe");
+        assertThat(result.score()).isEqualTo(0.8);
+        assertThat(result.passed()).isTrue();
     }
 }
