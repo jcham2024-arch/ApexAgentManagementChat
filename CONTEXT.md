@@ -73,31 +73,31 @@ phase says so.
 
 | File | Phase |
 |---|---|
-| `PHASE-S1-FOUNDATION.md` | S1 — ports, POMs, gates |
-| `PHASE-S2-KERNEL.md` | S2 — planner, loop, tools, CLI |
-| `PHASE-S2.0-MODULE-SKELETONS-*.md` | S2.0 — SESSION · POMS · MODULES |
-| `PHASE-S2.1-PORTS-*.md` | S2.1 — SESSION · INTERFACES · RECORDS · TESTS-DOCS |
-| `PHASE-S2.2-PLANNER-*.md` | S2.2 — SESSION · PRIMITIVES · ASTAR · LOOP · TESTS-DOCS |
-| `PHASE-S2.3-TOOLS-*.md` | S2.3 — SESSION · JSON · JAIL · FILE-TOOLS · RUN-COMMAND · HTTP-EXECUTOR · METADATA-TESTS · CONTRACTS-CRITERIA |
-| `PHASE-S2.4-MODEL-ADAPTER-*.md` | S2.4 — SESSION · CORE-PORT · LLM-BASICS · CONFIG · PROTOCOL · PROVIDER · METADATA-TESTS · CRITERIA |
-| `PHASE-S2.5-STORAGE-*.md` | S2.5 — SESSION · POM-EXCEPTION · SQLITE-PORT · METADATA-TESTS · CRITERIA |
-| `PHASE-S2.6-CLI-*.md` | S2.6 — SESSION · TASK-TYPES · FIELDS · RUNNER-MAIN · METADATA · TESTS-CRITERIA |
-| `PHASE-S2.7-E2E-*.md` | S2.7 — SESSION · DECISION-PROMPT · ASSERTIONS · RUNNER · MAIN · TESTS-CRITERIA |
-| `PHASE-S3.0-PLATFORM-BOOTSTRAP-*.md` | S3.0 — SESSION · RISK-APPROVAL · PLATFORM · TESTS-CRITERIA |
-| `PHASE-S3.1-AUTH-*.md` | S3.1 — SESSION · POM-AND-TYPES · POLICY · JWT-FILTER · TESTS-CRITERIA |
-| `PHASE-S3.2-TENANT-*.md` | S3.2 — SESSION · CORE-PORT · SQLITE · POMS-RUNNER · CLI · TESTS · ISOLATION-CRITERIA |
-| `PHASE-S3.3-AUDIT-*.md` | S3.3 — SESSION · CORE-PORT · AUDIT-CORE · AUDIT-LOG · CLI · AUDIT-TESTS · RUNNER-TESTS · CRITERIA |
-| `PHASE-S3.4-HITL-*.md` | S3.4 — human-in-the-loop approval gating |
-| `PHASE-S3-SECURITY.md` | S3 — auth, tenant, audit, HITL |
-| `PHASE-S4-MEMORY-SANDBOX.md` | S4 — memory router, three sandbox tiers |
-| `PHASE-S4.0-MEMORY-SANDBOX-BOOTSTRAP-*.md` | S4.0 — module skeletons, enums, interfaces |
-| `PHASE-S4.1-WORKING-MEMORY-*.md` | S4.1 — bounded working memory backend |
-| `PHASE-S5-FLYWHEEL.md` | S5 — log → propose → gate → deploy |
-| `PHASE-S6-SERVER-GUI.md` | S6 — SSE server, React chat MVP |
-| `PHASE-S7-COUNCIL.md` | S7 — confidence gate, parallel solvers |
-| `PHASE-S8-NODE.md` | S8 — A2A node, SBC/Android participant |
+| `build/PHASE-S1-FOUNDATION.md` | S1 — ports, POMs, gates |
+| `build/PHASE-S2-KERNEL.md` | S2 — planner, loop, tools, CLI |
+| `build/PHASE-S2.0-MODULE-SKELETONS-*.md` | S2.0 — SESSION · POMS · MODULES |
+| `build/PHASE-S2.1-PORTS-*.md` | S2.1 — SESSION · INTERFACES · RECORDS · TESTS-DOCS |
+| `build/PHASE-S2.2-PLANNER-*.md` | S2.2 — SESSION · PRIMITIVES · ASTAR · LOOP · TESTS-DOCS |
+| `build/PHASE-S2.3-TOOLS-*.md` | S2.3 — SESSION · JSON · JAIL · FILE-TOOLS · RUN-COMMAND · HTTP-EXECUTOR · METADATA-TESTS · CONTRACTS-CRITERIA |
+| `build/PHASE-S2.4-MODEL-ADAPTER-*.md` | S2.4 — SESSION · CORE-PORT · LLM-BASICS · CONFIG · PROTOCOL · PROVIDER · METADATA-TESTS · CRITERIA |
+| `build/PHASE-S2.5-STORAGE-*.md` | S2.5 — SESSION · POM-EXCEPTION · SQLITE-PORT · METADATA-TESTS · CRITERIA |
+| `build/PHASE-S2.6-CLI-*.md` | S2.6 — SESSION · TASK-TYPES · FIELDS · RUNNER-MAIN · METADATA · TESTS-CRITERIA |
+| `build/PHASE-S2.7-E2E-*.md` | S2.7 — SESSION · DECISION-PROMPT · ASSERTIONS · RUNNER · MAIN · TESTS-CRITERIA |
+| `build/PHASE-S3.0-PLATFORM-BOOTSTRAP-*.md` | S3.0 — SESSION · RISK-APPROVAL · PLATFORM · TESTS-CRITERIA |
+| `build/PHASE-S3.1-AUTH-*.md` | S3.1 — SESSION · POM-AND-TYPES · POLICY · JWT-FILTER · TESTS-CRITERIA |
+| `build/PHASE-S3.2-TENANT-*.md` | S3.2 — SESSION · CORE-PORT · SQLITE · POMS-RUNNER · CLI · TESTS · ISOLATION-CRITERIA |
+| `build/PHASE-S3.3-AUDIT-*.md` | S3.3 — SESSION · CORE-PORT · AUDIT-CORE · AUDIT-LOG · CLI · AUDIT-TESTS · RUNNER-TESTS · CRITERIA |
+| `build/PHASE-S3.4-HITL-*.md` | S3.4 — human-in-the-loop approval gating |
+| `build/PHASE-S3-SECURITY.md` | S3 — auth, tenant, audit, HITL |
+| `build/PHASE-S4-MEMORY-SANDBOX.md` | S4 — memory router, three sandbox tiers |
+| `build/PHASE-S4.0-MEMORY-SANDBOX-BOOTSTRAP-*.md` | S4.0 — module skeletons, enums, interfaces |
+| `build/PHASE-S4.1-WORKING-MEMORY-*.md` | S4.1 — bounded working memory backend |
+| `build/PHASE-S5-FLYWHEEL.md` | S5 — log → propose → gate → deploy |
+| `build/PHASE-S6-SERVER-GUI.md` | S6 — SSE server, React chat MVP |
+| `build/PHASE-S7-COUNCIL.md` | S7 — confidence gate, parallel solvers |
+| `build/PHASE-S8-NODE.md` | S8 — A2A node, SBC/Android participant |
 
-Supplemental phase files (`PHASE-S<N>-<NAME>-<SECTION>.md`) exist when a
+Supplemental phase files (`build/PHASE-S<N>-<NAME>-<SECTION>.md`) exist when a
 phase exceeds 200 lines. The phase file names them, and one row above
 lists every part of that split.
 
@@ -120,8 +120,8 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 |---|---|---|
 | `ChatModelPort` | `engine-llm-http` | `adapter-spring-ai` |
 | `PlannerPort` | `engine-planner` (A*) | `adapter-spring-ai` (Supervisor) |
-| `ToolExecutorPort` | `engine-tools` | `engine-tools-spring` |
-| `ApprovalPort` | `engine-approval-cli` | `adapter-spring-ai` (SSE) |
+| `ToolExecutorPort` | `engine-tools-impl` | `engine-tools-spring` |
+| `ApprovalPort` | `engine-cli` (terminal) | `adapter-spring-ai` (SSE) |
 | `StoragePort` | `engine-store-sqlite` | `adapter-spring-jdbc` |
 | `VectorStorePort` | `engine-store-sqlite-vss` | `adapter-spring-ai` (pgvector) |
 | `SecretsPort` | `SecretsPort-env` | `adapter-spring-vault` |
@@ -132,7 +132,7 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 
 | Tier | Modules | Allowed dependencies |
 |---|---|---|
-| **0 — Pure core** | `apex-chat-*`, `engine-core`, `engine-planner`, `engine-tools` (ports), `engine-store` (ports), `engine-improve`, `engine-memory` | `java.base`, `org.jspecify` |
+| **0 — Pure core** | `apex-chat-common`, `apex-chat-core`, `apex-chat-domain`, `engine-core`, `engine-planner`, `engine-tools` (ports), `engine-store` (ports), `engine-memory` | `java.base`, `org.jspecify` |
 | | *New in S3.5:* `com.apex.engine.core.invariants`, `com.apex.engine.core.guard` (two packages, `@NullMarked`, no I/O, no threading, no enterprise dependency) | |
 | | *New in S4.0:* `com.apex.engine.memory` (MemoryKind, MemoryQuery, MemoryHit, MemoryResult, MemoryRouter, ContextCompactor) | |
 | **1 — Local adapters** | `engine-tools` (impl), `engine-store-sqlite`, `engine-llm-http`, `apex-node`, `engine-sandbox` | Tier 0 + JDK IO + HTTP |
@@ -165,14 +165,14 @@ Catches reflection, `ServiceLoader`, shaded deps.
 
 | Phase | Phase file | Spec parts in scope |
 |---|---|---|
-| S1 | `PHASE-S1-FOUNDATION.md` | 01, 02 |
-| S2 | `PHASE-S2-KERNEL.md` | 03, 06, 08 |
-| S3 | `PHASE-S3-SECURITY.md` | none — router §4; S6 bridges 04, 09, 10 |
-| S4 | `PHASE-S4-MEMORY-SANDBOX.md` | 05, 08 |
-| S5 | `PHASE-S5-FLYWHEEL.md` | 11 |
-| S6 | `PHASE-S6-SERVER-GUI.md` | 06, 09 |
-| S7 | `PHASE-S7-COUNCIL.md` | 05 |
-| S8 | `PHASE-S8-NODE.md` | 09 |
+| S1 | `build/PHASE-S1-FOUNDATION.md` | 01, 02 |
+| S2 | `build/PHASE-S2-KERNEL.md` | 03, 06, 08 |
+| S3 | `build/PHASE-S3-SECURITY.md` | none — router §4; S6 bridges 04, 09, 10 |
+| S4 | `build/PHASE-S4-MEMORY-SANDBOX.md` | 05, 08 |
+| S5 | `build/PHASE-S5-FLYWHEEL.md` | 11 |
+| S6 | `build/PHASE-S6-SERVER-GUI.md` | 06, 09 |
+| S7 | `build/PHASE-S7-COUNCIL.md` | 05 |
+| S8 | `build/PHASE-S8-NODE.md` | 09 |
 
 One phase per session. Do not start the next until the human says go.
 Do not scaffold modules from a future phase.

@@ -59,7 +59,7 @@ ApexAgentManagementChat/
 | `engine-tools-impl/` | `engine-tools-impl/` | Matches |
 | `engine-llm-http/` | `engine-llm-http/` | Matches |
 | `engine-cli/` | `engine-cli/` | Matches |
-| `apex-chat-common/` | `apex-chat/apex-chat-common/` | Corrected |
+| `apex-chat-common/` | `apex-chat/apex-chat-core/` | Corrected |
 | `apex-auth/` | `apex-platform/apex-auth/` | Corrected |
 | `apex-tenant/` | `apex-platform/apex-tenant/` | Corrected |
 | `PORT-CATALOGUE.md` | `docs/PORT-CATALOGUE.md` | Corrected |
@@ -75,7 +75,7 @@ ApexAgentManagementChat/
 
 | Module | Path | Role |
 |---|---|---|
-| `apex-chat-common` | `apex-chat/apex-chat-common/` | `TenantId`, `TypedId`, identity types |
+| `apex-chat-common` | `apex-chat/apex-chat-core/` | `TenantId`, `TypedId`, identity types |
 | `engine-core` | `apex-core/engine-core/` | 9 ports, `PlanLoop`, `CancellationToken` |
 | `engine-planner` | `apex-core/engine-planner/` | `AStarPlanner`, GOAP actions/goals |
 | `engine-memory` | `engine-memory/` | `MemoryKind`, `MemoryQuery`, `MemoryRouter`, `ContextCompactor`, `BoundedWorkingMemory` |
