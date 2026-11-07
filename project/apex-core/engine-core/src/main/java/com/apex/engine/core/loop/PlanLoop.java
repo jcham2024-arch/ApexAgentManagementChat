@@ -3,15 +3,22 @@ package com.apex.engine.core.loop;
 import com.apex.engine.core.PolicyEngine;
 import com.apex.engine.core.port.AuditPort;
 import com.apex.engine.core.port.ChatEventSink;
+import com.apex.engine.core.port.GatePlacementPolicy;
 import com.apex.engine.core.port.MetricsPort;
 import com.apex.engine.core.port.RuntimePolicy;
 import com.apex.engine.core.port.TelemetryPort;
+import com.apex.engine.core.port.ToolGatewayPort;
+import com.apex.engine.core.port.model.AgentIdentity;
 import com.apex.engine.core.port.model.AgentVersionManifest;
+import com.apex.engine.core.port.model.ApprovalRequest;
+import com.apex.engine.core.port.model.AuthorizationRequest;
 import com.apex.engine.core.port.model.CostModel;
+import com.apex.engine.core.port.model.GatewayDecision;
 import com.apex.engine.core.port.model.GuardrailSet;
 import com.apex.engine.core.port.model.InvariantSet;
 import com.apex.engine.core.port.model.PolicyDecision;
 import com.apex.engine.core.port.model.TelemetrySpan;
+import com.apex.engine.core.port.model.ToolId;
 import com.apex.engine.planner.Action;
 import com.apex.engine.planner.ActionOutput;
 import com.apex.engine.planner.AStarPlanner;
@@ -39,6 +46,14 @@ import java.util.Optional;
  * deterministically. Denials are emitted to the audit chain and halt
  * the loop with {@link PlanStatus#POLICY_DENIED} rather than throwing.
  *
+ * <p>Before each action executes, if a {@link GatePlacementPolicy} is
+ * installed and requires a gate for that action, the call is routed
+ * through the {@link ToolGatewayPort}. A {@link GatewayDecision#Deny}
+ * halts the loop with {@link PlanStatus#POLICY_DENIED}; a
+ * {@link GatewayDecision#RequireApproval} halts it with
+ * {@link PlanStatus#APPROVAL_REQUIRED}. Only an
+ * {@link GatewayDecision#Approve} lets execution proceed.
+ *
  * <p>The concrete planner ({@link AStarPlanner}) is wired at the
  * application level. {@link Action} lives in engine-planner.
  */
@@ -52,17 +67,30 @@ public final class PlanLoop {
     private final AgentVersionManifest manifest;
     private final TelemetryPort telemetry;
     private final MetricsPort metrics;
+    private final ToolGatewayPort gateway;
+    private final GatePlacementPolicy gatePolicy;
+    private final AgentIdentity identity;
     private CostModel costModel = CostModel.none();
 
     public PlanLoop() {
         this(PolicyEngine.permissive(), GuardrailSet.none(),
-                InvariantSet.empty(), null, null, null, null);
+                InvariantSet.empty(), null, null, null, null,
+                null, null, null);
     }
 
     public PlanLoop(RuntimePolicy policy, GuardrailSet guardrails,
                     InvariantSet invariants, AuditPort audit,
                     AgentVersionManifest manifest, TelemetryPort telemetry,
                     MetricsPort metrics) {
+        this(policy, guardrails, invariants, audit, manifest,
+                telemetry, metrics, null, null, null);
+    }
+
+    public PlanLoop(RuntimePolicy policy, GuardrailSet guardrails,
+                    InvariantSet invariants, AuditPort audit,
+                    AgentVersionManifest manifest, TelemetryPort telemetry,
+                    MetricsPort metrics, ToolGatewayPort gateway,
+                    GatePlacementPolicy gatePolicy, AgentIdentity identity) {
         this.policy = Objects.requireNonNull(policy, "policy");
         this.guardrails = Objects.requireNonNull(guardrails, "guardrails");
         this.invariants = Objects.requireNonNull(invariants, "invariants");
@@ -70,6 +98,9 @@ public final class PlanLoop {
         this.manifest = manifest;
         this.telemetry = telemetry;
         this.metrics = metrics;
+        this.gateway = gateway;
+        this.gatePolicy = gatePolicy;
+        this.identity = identity;
     }
 
     public PlanLoopResult run(Blackboard initial, Goal goal,
@@ -131,6 +162,26 @@ public final class PlanLoop {
             Action action = plan.steps().get(0);
 
             int stepIndex = steps.size();
+
+            // Route tool calls through the gateway when a placement policy
+            // requires an approval gate. Fail-closed: denials halt the loop,
+            // require-approval stops it for out-of-loop human gating.
+            if (gateway != null && gatePolicy != null
+                    && gatePolicy.gateRequired(action, stepIndex, plan)) {
+                AuthorizationRequest request = new AuthorizationRequest(
+                        identity, new ToolId(action.id()), "{}", stepIndex);
+                GatewayDecision decision = gateway.execute(request);
+                if (decision instanceof GatewayDecision.Deny d) {
+                    recordDenial(plan, d.reason());
+                    return new PlanLoopResult(PlanStatus.POLICY_DENIED, state, steps);
+                }
+                if (decision instanceof GatewayDecision.RequireApproval r) {
+                    recordApprovalRequired(plan, r.request());
+                    return new PlanLoopResult(PlanStatus.APPROVAL_REQUIRED, state, steps);
+                }
+                // GatewayDecision.Approve: proceed to execute.
+            }
+
             Instant stepStart = Instant.now();
             sink.emit("PLAN_STEP_STARTED", stepIndex, stepStart);
 
@@ -166,6 +217,17 @@ public final class PlanLoop {
             audit.append("PLAN_DENIED: " + reason + " | manifest=" + manifestRef
                     + " | steps=" + plan.steps().size()
                     + " | cost=" + plan.cost(), Instant.now());
+        }
+    }
+
+    private void recordApprovalRequired(Plan plan, ApprovalRequest request) {
+        if (audit != null) {
+            String manifestRef = manifest == null ? "none"
+                    : "seq=" + manifest.sequence();
+            audit.append("APPROVAL_REQUIRED: request=" + request.id()
+                    + " | summary=" + request.summary()
+                    + " | manifest=" + manifestRef
+                    + " | step=" + plan.steps().size(), Instant.now());
         }
     }
 

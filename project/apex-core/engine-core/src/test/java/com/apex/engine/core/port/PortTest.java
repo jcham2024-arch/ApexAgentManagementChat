@@ -55,7 +55,7 @@ class PortTest {
     @Test
     void approvalPortIsImplementable() {
         ApprovalPort port =
-                req -> new ApprovalDecision(req.id(), true, "approved");
+                req -> new ApprovalDecision.Approve(req.id(), "approved");
 
         assertThat(port.request(new ApprovalRequest("r1", "write file",
                 RiskLevel.L1)).approved()).isTrue();

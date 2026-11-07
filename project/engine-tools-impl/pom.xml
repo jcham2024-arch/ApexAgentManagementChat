@@ -25,6 +25,11 @@
         </dependency>
         <dependency>
             <groupId>com.apex</groupId>
+            <artifactId>engine-planner</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apex</groupId>
             <artifactId>engine-json</artifactId>
             <version>${project.version}</version>
         </dependency>

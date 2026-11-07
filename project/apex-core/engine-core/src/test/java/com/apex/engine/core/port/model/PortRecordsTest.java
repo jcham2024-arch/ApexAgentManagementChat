@@ -94,7 +94,7 @@ class PortRecordsTest {
     @Test
     void approvalDecisionRejectsNullRequestId() {
         assertThatNullPointerException()
-                .isThrownBy(() -> new ApprovalDecision(null, true, "ok"));
+                .isThrownBy(() -> new ApprovalDecision.Approve(null, "ok"));
     }
 
     @Test
