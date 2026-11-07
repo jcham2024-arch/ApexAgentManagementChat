@@ -15,6 +15,8 @@ The core never imports an adapter. Tiers are defined in
 | `SecretsPort` | env vars | `adapter-spring-vault` | S3 |
 | `AuditPort` | append-only file | `adapter-spring-audit` | S3 |
 | `TelemetryPort` | no-op | `adapter-micrometer` | S2 (no-op) |
+| `AgentVersionStore` | `engine-store-sqlite` | — | S1 |
+| `MetricsPort` | — | `engine-metrics` | S1 |
 
 ## Adding a port
 

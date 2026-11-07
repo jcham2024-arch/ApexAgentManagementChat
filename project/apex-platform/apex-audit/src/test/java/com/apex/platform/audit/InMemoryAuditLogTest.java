@@ -101,7 +101,7 @@ class InMemoryAuditLogTest {
 
         AuditEntry tampered = new AuditEntry(
                 original.id(), "TAMPERED", original.at(),
-                original.previousHash(), original.hash());
+                original.previousHash(), original.hash(), "", "");
         entries.set(1, tampered);
 
         assertThat(log.verifyChain()).isFalse();

@@ -10,22 +10,27 @@ import java.util.Objects;
  *
  * <p>Genesis entries carry {@code previousHash = ""} (empty string, not
  * null). The {@code hash} field is an HMAC-SHA256 of
- * {@code previousHash | id | action | at.toEpochMilli()} keyed by a
- * secret the caller does not control.
+ * {@code previousHash | id | action | at.toEpochMilli() | traceId | spanId}
+ * keyed by a secret the caller does not control. {@code traceId} and
+ * {@code spanId} let an auditor traverse from an audit entry to its trace
+ * and back without trusting the tracing backend.
  */
 public record AuditEntry(
         String id,
         String action,
         Instant at,
         String previousHash,
-        String hash
-) {
+        String hash,
+        String traceId,
+        String spanId) {
     public AuditEntry {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(action, "action");
         Objects.requireNonNull(at, "at");
         Objects.requireNonNull(previousHash, "previousHash");
         Objects.requireNonNull(hash, "hash");
+        traceId = traceId == null ? "" : traceId;
+        spanId = spanId == null ? "" : spanId;
         if (id.isBlank()) {
             throw new IllegalArgumentException("id must not be blank");
         }

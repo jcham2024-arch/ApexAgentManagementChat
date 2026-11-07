@@ -3,7 +3,6 @@ package com.apex.engine.core.port;
 import com.apex.chat.common.identity.TenantId;
 import com.apex.engine.core.port.model.ApprovalDecision;
 import com.apex.engine.core.port.model.ApprovalRequest;
-import com.apex.engine.planner.RiskLevel;
 import com.apex.engine.core.port.model.AuditEntry;
 import com.apex.engine.core.port.model.ChatRequest;
 import com.apex.engine.core.port.model.ChatResponse;
@@ -15,6 +14,8 @@ import com.apex.engine.core.port.model.TelemetrySpan;
 import com.apex.engine.core.port.model.ToolCall;
 import com.apex.engine.core.port.model.ToolResult;
 import com.apex.engine.core.port.model.VectorHit;
+import com.apex.engine.planner.RiskLevel;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -109,14 +110,22 @@ class PortTest {
 
     @Test
     void auditPortIsImplementable() {
+        AtomicInteger spans = new AtomicInteger();
+        AtomicInteger traces = new AtomicInteger();
         AuditPort port = new AuditPort() {
             private final List<AuditEntry> entries = new ArrayList<>();
 
             @Override public AuditEntry append(String action, Instant at) {
+                return append(action, at, "", "");
+            }
+
+            @Override public AuditEntry append(String action, Instant at,
+                    String traceId, String spanId) {
                 AuditEntry e = new AuditEntry(
                         java.util.UUID.randomUUID().toString(),
-                        action, at, "", "hash");
+                        action, at, "", "hash", traceId, spanId);
                 entries.add(e);
+                traces.incrementAndGet();
                 return e;
             }
 
@@ -129,11 +138,14 @@ class PortTest {
             }
         };
 
-        AuditEntry entry = port.append("x", Instant.now());
+        AuditEntry entry = port.append("x", Instant.now(), "trace-1", "span-1");
 
         assertThat(entry.action()).isEqualTo("x");
+        assertThat(entry.traceId()).isEqualTo("trace-1");
+        assertThat(entry.spanId()).isEqualTo("span-1");
         assertThat(port.all()).hasSize(1);
         assertThat(port.verifyChain()).isTrue();
+        assertThat(traces).hasValue(1);
     }
 
     @Test

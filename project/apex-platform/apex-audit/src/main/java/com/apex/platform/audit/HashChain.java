@@ -31,7 +31,20 @@ public final class HashChain {
 
     public String compute(String previousHash, String id, String action,
                           long atMillis) {
-        String input = previousHash + "|" + id + "|" + action + "|" + atMillis;
+        return compute(previousHash, id, action, atMillis, "", "");
+    }
+
+    /**
+     * Trace-aware variant: includes {@code traceId} and {@code spanId} in
+     * the HMAC input so an auditor can traverse from an audit entry to its
+     * trace and back. Null trace/span are stored as empty string.
+     */
+    public String compute(String previousHash, String id, String action,
+                          long atMillis, String traceId, String spanId) {
+        traceId = traceId == null ? "" : traceId;
+        spanId = spanId == null ? "" : spanId;
+        String input = previousHash + "|" + id + "|" + action + "|" + atMillis
+                + "|" + traceId + "|" + spanId;
         try {
             Mac mac = Mac.getInstance(ALGORITHM);
             mac.init(new SecretKeySpec(key, ALGORITHM));
