@@ -9,7 +9,7 @@ import java.util.Objects;
  * <p>Tier 0: no behavior beyond null/blank validation. No threads, no I/O,
  * no network.
  */
-final class IdValidation {
+public final class IdValidation {
 
     private IdValidation() {}
 
@@ -23,7 +23,7 @@ final class IdValidation {
      * @throws NullPointerException if {@code value} is {@code null}
      * @throws IllegalArgumentException if {@code value} is blank
      */
-    static String requireNonBlank(String value, String name) {
+    public static String requireNonBlank(String value, String name) {
         Objects.requireNonNull(value, name + " must not be null");
         if (value.isBlank()) {
             throw new IllegalArgumentException(name + " must not be blank");

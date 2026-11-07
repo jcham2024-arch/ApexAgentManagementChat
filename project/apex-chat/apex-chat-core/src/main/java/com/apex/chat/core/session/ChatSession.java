@@ -4,6 +4,7 @@ import com.apex.chat.common.identity.TenantId;
 import com.apex.chat.core.ChatSessionId;
 import com.apex.chat.core.SessionState;
 import com.apex.chat.core.event.ChatLifecycleEvent;
+import com.apex.chat.core.spi.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.Objects;
  * <p>Transitions: {@link SessionState#OPEN} → {@link SessionState#CLOSED}
  * or {@link SessionState#OPEN} → {@link SessionState#FAILED}. Once
  * {@code CLOSED} or {@code FAILED}, no further events may be appended.
+ *
+ * <p>A {@link Clock} is injected for deterministic snapshots in tests.
  */
 public final class ChatSession {
 
@@ -29,23 +32,27 @@ public final class ChatSession {
     private final List<ChatLifecycleEvent> events;
     private SessionState state;
     private long lastSequence;
+    private final Clock clock;
 
     public ChatSession(ChatSessionId id, TenantId tenantId,
                         List<ChatLifecycleEvent> events,
-                        SessionState state, long lastSequence) {
+                        SessionState state, long lastSequence,
+                        Clock clock) {
         this.id = id;
         this.tenantId = tenantId;
         this.events = new ArrayList<>(events);
         this.state = state;
         this.lastSequence = lastSequence;
+        this.clock = Objects.requireNonNull(clock, "clock");
     }
 
     /**
      * Creates a new session in the {@link SessionState#OPEN} state with
-     * no events.
+     * no events, using the system clock.
      */
     public static ChatSession open(ChatSessionId id, TenantId tenantId) {
-        return new ChatSession(id, tenantId, List.of(), SessionState.OPEN, 0);
+        return new ChatSession(id, tenantId, List.of(), SessionState.OPEN, 0,
+                java.time.Clock.systemUTC()::instant);
     }
 
     public ChatSessionId id() {
@@ -94,13 +101,13 @@ public final class ChatSession {
         }
         if (!event.sessionId().equals(id)) {
             throw new IllegalArgumentException(
-                "event sessionId " + event.sessionId()
-                + " does not match session id " + id);
+                    "event sessionId " + event.sessionId()
+                    + " does not match session id " + id);
         }
         if (!event.tenantId().equals(tenantId)) {
             throw new IllegalArgumentException(
-                "event tenantId " + event.tenantId()
-                + " does not match session tenantId " + tenantId);
+                    "event tenantId " + event.tenantId()
+                    + " does not match session tenantId " + tenantId);
         }
 
         events.add(event);
@@ -114,12 +121,13 @@ public final class ChatSession {
     }
 
     /**
-     * Takes an immutable snapshot of the current session state.
+     * Takes an immutable snapshot of the current session state using the
+     * injected clock.
      */
     public ChatSessionSnapshot snapshot() {
         return new ChatSessionSnapshot(
             id, tenantId, state, events(), lastSequence,
-            java.time.Clock.systemUTC().instant()
+            clock.now()
         );
     }
 }

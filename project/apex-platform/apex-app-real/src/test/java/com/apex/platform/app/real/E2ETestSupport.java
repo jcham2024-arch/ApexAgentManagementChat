@@ -106,7 +106,8 @@ abstract class E2ETestSupport {
                 "http://127.0.0.1:" + server.getAddress().getPort() + "/v1",
                 "APEX_LLM_API_KEY", "test",
                 "APEX_LLM_DEFAULT_MODEL", "mock-model",
-                "APEX_LLM_TIMEOUT_SEC", "10");
+                "APEX_LLM_TIMEOUT_SEC", "10",
+                "APEX_AUDIT_SECRET", "test-audit-secret-0123456789abcdef");
     }
 
     Path writeTask(String yaml) throws IOException {

@@ -16,229 +16,150 @@ class EpisodicMemoryBackendTest {
 
     private static final TenantId TENANT = new TenantId("tenant-1");
     private static final String SESSION = "session-1";
+    private static final Instant T0 = Instant.parse("2026-01-01T00:00:00Z");
 
     private static class TestStoragePort implements StoragePort {
         private final List<StepLogEntry> entries = new CopyOnWriteArrayList<>();
-
         @Override
-        public void appendStep(StepLogEntry entry) {
-            entries.add(entry);
-        }
-
+        public void appendStep(StepLogEntry entry) { entries.add(entry); }
         @Override
         public List<StepLogEntry> stepsFor(TenantId tenantId, String sessionId) {
             List<StepLogEntry> result = new ArrayList<>();
             for (StepLogEntry entry : entries) {
-                if (entry.tenantId().equals(tenantId)
-                        && entry.sessionId().equals(sessionId)) {
+                if (entry.tenantId().equals(tenantId) && entry.sessionId().equals(sessionId)) {
                     result.add(entry);
                 }
             }
             return result;
         }
-
         @Override
         public void clear(TenantId tenantId, String sessionId) {
-            entries.removeIf(e -> e.tenantId().equals(tenantId)
-                    && e.sessionId().equals(sessionId));
+            entries.removeIf(e -> e.tenantId().equals(tenantId) && e.sessionId().equals(sessionId));
         }
+    }
+
+    private static EpisodicMemoryBackend backend() {
+        return new EpisodicMemoryBackend(new TestStoragePort(), TENANT, SESSION);
+    }
+
+    private static WorkingMemoryEntry entry(String content) {
+        return new WorkingMemoryEntry("assistant", content, T0);
     }
 
     @Test
     void kindIsEpisodic() {
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                new TestStoragePort(), TENANT, SESSION);
-        assertThat(backend.kind()).isEqualTo(MemoryKind.EPISODIC);
+        assertThat(backend().kind()).isEqualTo(MemoryKind.EPISODIC);
     }
 
     @Test
     void addAndQueryExactMatch() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-
-        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
-        backend.add(new WorkingMemoryEntry("assistant",
-                "the quick brown fox", t0));
-
-        MemoryQuery q = new MemoryQuery("quick",
-                Set.of(MemoryKind.EPISODIC), 10);
-        MemoryResult result = backend.query(q);
-
+        EpisodicMemoryBackend b = backend();
+        b.add(entry("the quick brown fox"));
+        MemoryQuery q = new MemoryQuery("quick", Set.of(MemoryKind.EPISODIC), 10);
+        MemoryResult result = b.query(q);
         assertThat(result.hits()).hasSize(1);
         assertThat(result.hits().get(0).score()).isEqualTo(1.0);
         assertThat(result.hits().get(0).kind()).isEqualTo(MemoryKind.EPISODIC);
         assertThat(result.hits().get(0).source()).isEqualTo("assistant");
-        assertThat(result.hits().get(0).content())
-                .isEqualTo("the quick brown fox");
+        assertThat(result.hits().get(0).content()).isEqualTo("the quick brown fox");
         assertThat(result.queried()).containsExactly(MemoryKind.EPISODIC);
     }
 
     @Test
     void queryCaseInsensitiveScoresLower() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-
-        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
-        backend.add(new WorkingMemoryEntry("assistant",
-                "The QUICK brown fox", t0));
-
-        MemoryQuery q = new MemoryQuery("quick",
-                Set.of(MemoryKind.EPISODIC), 10);
-        MemoryResult result = backend.query(q);
-
-        assertThat(result.hits()).hasSize(1);
-        assertThat(result.hits().get(0).score()).isEqualTo(0.8);
+        EpisodicMemoryBackend b = backend();
+        b.add(entry("The QUICK brown fox"));
+        MemoryQuery q = new MemoryQuery("quick", Set.of(MemoryKind.EPISODIC), 10);
+        assertThat(b.query(q).hits().get(0).score()).isEqualTo(0.8);
     }
 
     @Test
     void queryMissReturnsEmpty() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-
-        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
-        backend.add(new WorkingMemoryEntry("assistant",
-                "the quick brown fox", t0));
-
-        MemoryQuery q = new MemoryQuery("zebra",
-                Set.of(MemoryKind.EPISODIC), 10);
-        MemoryResult result = backend.query(q);
-
-        assertThat(result.hits()).isEmpty();
-        assertThat(result.queried()).containsExactly(MemoryKind.EPISODIC);
+        EpisodicMemoryBackend b = backend();
+        b.add(entry("the quick brown fox"));
+        MemoryQuery q = new MemoryQuery("zebra", Set.of(MemoryKind.EPISODIC), 10);
+        assertThat(b.query(q).hits()).isEmpty();
+        assertThat(b.query(q).queried()).containsExactly(MemoryKind.EPISODIC);
     }
 
     @Test
     void queryRespectsMaxHits() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-
-        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
-        backend.add(new WorkingMemoryEntry("assistant", "quick alpha", t0));
-        backend.add(new WorkingMemoryEntry("assistant", "quick beta", t0));
-        backend.add(new WorkingMemoryEntry("assistant", "quick gamma", t0));
-
-        MemoryQuery q = new MemoryQuery("quick",
-                Set.of(MemoryKind.EPISODIC), 2);
-        MemoryResult result = backend.query(q);
-
-        assertThat(result.hits()).hasSize(2);
+        EpisodicMemoryBackend b = backend();
+        b.add(new WorkingMemoryEntry("assistant", "quick alpha", T0));
+        b.add(new WorkingMemoryEntry("assistant", "quick beta", T0));
+        b.add(new WorkingMemoryEntry("assistant", "quick gamma", T0));
+        MemoryQuery q = new MemoryQuery("quick", Set.of(MemoryKind.EPISODIC), 2);
+        assertThat(b.query(q).hits()).hasSize(2);
     }
 
     @Test
     void queryOtherKindReturnsEmpty() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-
-        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
-        backend.add(new WorkingMemoryEntry("assistant",
-                "the quick brown fox", t0));
-
-        MemoryQuery q = new MemoryQuery("quick",
-                Set.of(MemoryKind.WORKING), 10);
-        MemoryResult result = backend.query(q);
-
-        assertThat(result.hits()).isEmpty();
-        assertThat(result.queried()).isEmpty();
+        EpisodicMemoryBackend b = backend();
+        b.add(entry("the quick brown fox"));
+        MemoryQuery q = new MemoryQuery("quick", Set.of(MemoryKind.WORKING), 10);
+        assertThat(b.query(q).hits()).isEmpty();
+        assertThat(b.query(q).queried()).isEmpty();
     }
 
     @Test
     void sizeIncrementsOnAdd() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-
-        assertThat(backend.size()).isZero();
-
-        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
-        backend.add(new WorkingMemoryEntry("assistant", "one", t0));
-        assertThat(backend.size()).isEqualTo(1);
-
-        backend.add(new WorkingMemoryEntry("assistant", "two", t0));
-        assertThat(backend.size()).isEqualTo(2);
+        EpisodicMemoryBackend b = backend();
+        assertThat(b.size()).isZero();
+        b.add(entry("one"));
+        assertThat(b.size()).isEqualTo(1);
+        b.add(entry("two"));
+        assertThat(b.size()).isEqualTo(2);
     }
 
     @Test
     void rejectsNullStorage() {
-        assertThatThrownBy(() -> new EpisodicMemoryBackend(
-                null, TENANT, SESSION))
+        assertThatThrownBy(() -> new EpisodicMemoryBackend(null, TENANT, SESSION))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void rejectsNullTenant() {
-        TestStoragePort storage = new TestStoragePort();
-        assertThatThrownBy(() -> new EpisodicMemoryBackend(
-                storage, null, SESSION))
+        assertThatThrownBy(() -> new EpisodicMemoryBackend(new TestStoragePort(), null, SESSION))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void rejectsNullSession() {
-        TestStoragePort storage = new TestStoragePort();
-        assertThatThrownBy(() -> new EpisodicMemoryBackend(
-                storage, TENANT, null))
+        assertThatThrownBy(() -> new EpisodicMemoryBackend(new TestStoragePort(), TENANT, null))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void rejectsNullEntry() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-        assertThatThrownBy(() -> backend.add(null))
-                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> backend().add(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void clearRemovesAllEntries() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
-        backend.add(new WorkingMemoryEntry("assistant", "entry one", t0));
-        backend.add(new WorkingMemoryEntry("user", "entry two", t0));
-        assertThat(backend.size()).isEqualTo(2);
-
-        backend.clear();
-        assertThat(backend.size()).isEqualTo(0);
-
-        MemoryQuery q = new MemoryQuery("entry",
-                Set.of(MemoryKind.EPISODIC), 10);
-        MemoryResult result = backend.query(q);
-        assertThat(result.hits()).isEmpty();
+        EpisodicMemoryBackend b = backend();
+        b.add(new WorkingMemoryEntry("assistant", "entry one", T0));
+        b.add(new WorkingMemoryEntry("user", "entry two", T0));
+        assertThat(b.size()).isEqualTo(2);
+        b.clear();
+        assertThat(b.size()).isEqualTo(0);
+        MemoryQuery q = new MemoryQuery("entry", Set.of(MemoryKind.EPISODIC), 10);
+        assertThat(b.query(q).hits()).isEmpty();
     }
 
     @Test
     void queryRejectsNull() {
-        TestStoragePort storage = new TestStoragePort();
-        EpisodicMemoryBackend backend = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-        assertThatThrownBy(() -> backend.query(null))
-                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> backend().query(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void persistsAcrossBackendInstances() {
         TestStoragePort storage = new TestStoragePort();
-        Instant t0 = Instant.parse("2026-01-01T00:00:00Z");
-
-        EpisodicMemoryBackend backend1 = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-        backend1.add(new WorkingMemoryEntry("assistant", "first entry", t0));
-
-        EpisodicMemoryBackend backend2 = new EpisodicMemoryBackend(
-                storage, TENANT, SESSION);
-        assertThat(backend2.size()).isEqualTo(1);
-
-        MemoryQuery q = new MemoryQuery("first",
-                Set.of(MemoryKind.EPISODIC), 10);
-        MemoryResult result = backend2.query(q);
-        assertThat(result.hits()).hasSize(1);
-        assertThat(result.hits().get(0).content()).isEqualTo("first entry");
+        EpisodicMemoryBackend b1 = new EpisodicMemoryBackend(storage, TENANT, SESSION);
+        b1.add(new WorkingMemoryEntry("assistant", "first entry", T0));
+        EpisodicMemoryBackend b2 = new EpisodicMemoryBackend(storage, TENANT, SESSION);
+        assertThat(b2.size()).isEqualTo(1);
+        MemoryQuery q = new MemoryQuery("first", Set.of(MemoryKind.EPISODIC), 10);
+        assertThat(b2.query(q).hits()).hasSize(1);
+        assertThat(b2.query(q).hits().get(0).content()).isEqualTo("first entry");
     }
 }

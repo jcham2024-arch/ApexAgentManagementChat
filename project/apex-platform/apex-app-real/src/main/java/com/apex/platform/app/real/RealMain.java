@@ -33,12 +33,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Real-mode entrypoint. Wires the four Tier 1 adapters behind
- * {@link RealTaskRunner} from engine-cli. Lives in Tier 2 so that
- * engine-cli (Tier 1) never depends on another Tier 1 module.
- *
- * <p>Flags: {@code --auto-approve}, {@code --workspace <path>},
- * {@code --tenant <id>} <task-file>.
+ * Real-mode entrypoint. Wires Tier 1 adapters behind RealTaskRunner.
+ * Lives in Tier 2 so engine-cli never depends on another Tier 1 module.
+ * Flags: --auto-approve, --workspace <path>, --tenant <id> <task-file>.
  */
 public final class RealMain {
 
@@ -126,10 +123,8 @@ public final class RealMain {
         ToolExecutorPort tools = new KernelToolExecutor(jail, registry);
         StoragePort storage = new SqliteStoragePort(
                 workspace.resolve(".apex/steps.db"));
-        byte[] auditKey = env.containsKey("APEX_AUDIT_SECRET")
-                ? env.get("APEX_AUDIT_SECRET").getBytes(StandardCharsets.UTF_8)
-                : "dev-only-do-not-use-in-production!!"
-                        .getBytes(StandardCharsets.UTF_8);
+        byte[] auditKey = requireEnv(env, "APEX_AUDIT_SECRET")
+                .getBytes(StandardCharsets.UTF_8);
         AuditPort audit = new InMemoryAuditLog(auditKey);
         Map<String, RiskLevel> risks = defaultRiskRegistry();
         return new RealTaskRunner(model, tools, storage, audit, approval,
@@ -160,20 +155,16 @@ public final class RealMain {
         return risks;
     }
 
-    private static final class CliArgs {
-        final boolean autoApprove;
-        final Path workspace;
-        final TenantId tenant;
-        final Path taskFile;
-
-        CliArgs(boolean autoApprove, Path workspace, TenantId tenant,
-                Path taskFile) {
-            this.autoApprove = autoApprove;
-            this.workspace = workspace;
-            this.tenant = tenant;
-            this.taskFile = taskFile;
+    private static String requireEnv(Map<String, String> env, String key) {
+        String v = env.get(key);
+        if (v == null || v.isBlank()) {
+            throw new IllegalArgumentException("missing required env: " + key);
         }
+        return v;
     }
+
+    record CliArgs(boolean autoApprove, Path workspace, TenantId tenant,
+                   Path taskFile) {}
 
     private static CliArgs parseArgs(String[] args) {
         boolean autoApprove = false;
