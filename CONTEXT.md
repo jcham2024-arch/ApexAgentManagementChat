@@ -129,6 +129,7 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 | `TelemetryPort` | `TelemetryPort-noop` | `adapter-micrometer` |
 | `AgentVersionStore` | `engine-store-sqlite` | — |
 | `MetricsPort` | — | `engine-metrics` |
+| `CheckpointPort` | `engine-store-sqlite` | — |
 
 ## 4. Three tiers
 

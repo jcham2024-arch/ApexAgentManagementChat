@@ -3,6 +3,7 @@ package com.apex.engine.core.loop;
 import com.apex.engine.core.PolicyEngine;
 import com.apex.engine.core.port.AuditPort;
 import com.apex.engine.core.port.ChatEventSink;
+import com.apex.engine.core.port.CheckpointPort;
 import com.apex.engine.core.port.GatePlacementPolicy;
 import com.apex.engine.core.port.MetricsPort;
 import com.apex.engine.core.port.RuntimePolicy;
@@ -12,6 +13,7 @@ import com.apex.engine.core.port.model.AgentIdentity;
 import com.apex.engine.core.port.model.AgentVersionManifest;
 import com.apex.engine.core.port.model.ApprovalRequest;
 import com.apex.engine.core.port.model.AuthorizationRequest;
+import com.apex.engine.core.port.model.CheckpointRecord;
 import com.apex.engine.core.port.model.CostModel;
 import com.apex.engine.core.port.model.GatewayDecision;
 import com.apex.engine.core.port.model.GuardrailSet;
@@ -70,12 +72,14 @@ public final class PlanLoop {
     private final ToolGatewayPort gateway;
     private final GatePlacementPolicy gatePolicy;
     private final AgentIdentity identity;
+    private final CheckpointPort checkpoint;
+    private final String sessionId;
     private CostModel costModel = CostModel.none();
 
     public PlanLoop() {
         this(PolicyEngine.permissive(), GuardrailSet.none(),
                 InvariantSet.empty(), null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
     }
 
     public PlanLoop(RuntimePolicy policy, GuardrailSet guardrails,
@@ -83,7 +87,7 @@ public final class PlanLoop {
                     AgentVersionManifest manifest, TelemetryPort telemetry,
                     MetricsPort metrics) {
         this(policy, guardrails, invariants, audit, manifest,
-                telemetry, metrics, null, null, null);
+                telemetry, metrics, null, null, null, null, null);
     }
 
     public PlanLoop(RuntimePolicy policy, GuardrailSet guardrails,
@@ -91,6 +95,17 @@ public final class PlanLoop {
                     AgentVersionManifest manifest, TelemetryPort telemetry,
                     MetricsPort metrics, ToolGatewayPort gateway,
                     GatePlacementPolicy gatePolicy, AgentIdentity identity) {
+        this(policy, guardrails, invariants, audit, manifest,
+                telemetry, metrics, gateway, gatePolicy, identity,
+                null, null);
+    }
+
+    public PlanLoop(RuntimePolicy policy, GuardrailSet guardrails,
+                    InvariantSet invariants, AuditPort audit,
+                    AgentVersionManifest manifest, TelemetryPort telemetry,
+                    MetricsPort metrics, ToolGatewayPort gateway,
+                    GatePlacementPolicy gatePolicy, AgentIdentity identity,
+                    CheckpointPort checkpoint, String sessionId) {
         this.policy = Objects.requireNonNull(policy, "policy");
         this.guardrails = Objects.requireNonNull(guardrails, "guardrails");
         this.invariants = Objects.requireNonNull(invariants, "invariants");
@@ -101,6 +116,8 @@ public final class PlanLoop {
         this.gateway = gateway;
         this.gatePolicy = gatePolicy;
         this.identity = identity;
+        this.checkpoint = checkpoint;
+        this.sessionId = sessionId;
     }
 
     public PlanLoopResult run(Blackboard initial, Goal goal,
@@ -200,6 +217,12 @@ public final class PlanLoop {
             if (metrics != null) {
                 metrics.counter("steps.executed", 1L);
                 metrics.histogram("step.duration.ms", (double) durationMs);
+            }
+
+            // Checkpoint after each successful step for deterministic replay.
+            if (checkpoint != null && sessionId != null) {
+                checkpoint.saveCheckpoint(sessionId, stepIndex + 1,
+                        state.snapshot().toString());
             }
 
             if (output instanceof ActionOutput.Failure) {
