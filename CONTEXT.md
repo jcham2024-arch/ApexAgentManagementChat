@@ -139,7 +139,7 @@ not add a port without amending `docs/PORT-CATALOGUE.md`.
 | | *New in S3.5:* `com.apex.engine.core.invariants`, `com.apex.engine.core.guard` (two packages, `@NullMarked`, no I/O, no threading, no enterprise dependency) | |
 | | *New in S4.0:* `com.apex.engine.memory` (MemoryKind, MemoryQuery, MemoryHit, MemoryResult, MemoryRouter, ContextCompactor) | |
 | **1 — Local adapters** | `engine-tools` (impl), `engine-store-sqlite`, `engine-llm-http`, `apex-node`, `engine-sandbox` | Tier 0 + JDK IO + HTTP |
-| **2 — Enterprise adapters** | `adapter-spring-ai`, `adapter-mcp-toolbox`, `apex-platform` (parent; `apex-auth` JWT/RBAC, `apex-tenant` isolation/RLS, `apex-audit` chained log), `engine-server`, `engine-otel`, `engine-metrics` | Tier 0 + Spring + Google + Jackson + Micrometer |
+| **2 — Enterprise adapters** | `adapter-spring-ai`, `adapter-mcp-toolbox`, `apex-platform` (parent; `apex-auth` JWT/RBAC, `apex-tenant` isolation/RLS, `apex-audit` chained log), `engine-server`, `engine-otel`, `engine-metrics`, `engine-approval`, `engine-eval` | Tier 0 + Spring + Google + Jackson + Micrometer |
 
 A feature that requires Spring is a Tier 2 feature. It goes into an
 adapter, never into the core.
