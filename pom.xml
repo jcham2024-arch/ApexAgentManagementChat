@@ -38,6 +38,10 @@
         <module>project/engine-store-sqlite</module>
         <module>project/engine-tools-impl</module>
         <module>project/apex-chat/apex-chat-store-sqlite</module>
+        <module>project/engine-otel</module>
+        <module>project/engine-metrics</module>
+        <module>project/engine-approval</module>
+        <module>project/engine-eval</module>
     </modules>
 
     <dependencyManagement>

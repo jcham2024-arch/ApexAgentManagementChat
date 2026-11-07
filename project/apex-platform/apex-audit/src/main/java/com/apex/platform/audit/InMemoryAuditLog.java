@@ -35,6 +35,12 @@ public final class InMemoryAuditLog implements AuditPort {
 
     @Override
     public synchronized AuditEntry append(String action, Instant at) {
+        return append(action, at, "", "");
+    }
+
+    @Override
+    public synchronized AuditEntry append(String action, Instant at,
+                                          String traceId, String spanId) {
         Objects.requireNonNull(action, "action");
         Objects.requireNonNull(at, "at");
 
@@ -44,10 +50,10 @@ public final class InMemoryAuditLog implements AuditPort {
                 ? ""
                 : entries.get(entries.size() - 1).hash();
         String hash = chain.compute(previousHash, id, redactedAction,
-                at.toEpochMilli());
+                at.toEpochMilli(), traceId, spanId);
 
         AuditEntry entry = new AuditEntry(id, redactedAction, at,
-                previousHash, hash);
+                previousHash, hash, traceId, spanId);
         entries.add(entry);
         return entry;
     }
@@ -65,7 +71,8 @@ public final class InMemoryAuditLog implements AuditPort {
                 return false;
             }
             String recomputed = chain.compute(entry.previousHash(),
-                    entry.id(), entry.action(), entry.at().toEpochMilli());
+                    entry.id(), entry.action(), entry.at().toEpochMilli(),
+                    entry.traceId(), entry.spanId());
             if (!recomputed.equals(entry.hash())) {
                 return false;
             }

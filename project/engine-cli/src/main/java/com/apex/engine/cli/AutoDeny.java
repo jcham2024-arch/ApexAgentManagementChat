@@ -17,6 +17,6 @@ public final class AutoDeny implements ApprovalPort {
     @Override
     public ApprovalDecision request(ApprovalRequest req) {
         Objects.requireNonNull(req, "req");
-        return new ApprovalDecision(req.id(), false, "auto-denied");
+        return new ApprovalDecision.Reject(req.id(), "auto-denied");
     }
 }

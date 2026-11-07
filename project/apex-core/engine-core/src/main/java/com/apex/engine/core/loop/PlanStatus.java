@@ -8,5 +8,7 @@ public enum PlanStatus {
     STUCK,
     FAILED,
     CANCELLED,
-    MAX_STEPS_EXCEEDED
+    MAX_STEPS_EXCEEDED,
+    POLICY_DENIED,
+    APPROVAL_REQUIRED
 }

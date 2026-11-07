@@ -17,6 +17,6 @@ public final class AutoApprove implements ApprovalPort {
     @Override
     public ApprovalDecision request(ApprovalRequest req) {
         Objects.requireNonNull(req, "req");
-        return new ApprovalDecision(req.id(), true, "auto-approved");
+        return new ApprovalDecision.Approve(req.id(), "auto-approved");
     }
 }

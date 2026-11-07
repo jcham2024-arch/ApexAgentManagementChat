@@ -18,8 +18,14 @@ public interface AuditPort {
     /**
      * Redacts PII from {@code action}, computes the chain hash, appends
      * the entry, and returns it. The redacted form is what gets stored.
+     *
+     * <p>Null {@code traceId}/{@code spanId} are stored as empty string.
      */
-    AuditEntry append(String action, Instant at);
+    default AuditEntry append(String action, Instant at) {
+        return append(action, at, "", "");
+    }
+
+    AuditEntry append(String action, Instant at, String traceId, String spanId);
 
     /** Returns an immutable snapshot of all entries, in append order. */
     List<AuditEntry> all();

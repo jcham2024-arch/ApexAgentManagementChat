@@ -53,7 +53,8 @@ class TerminalApprovalTest {
         ApprovalDecision decision = approvalFor("y\n").request(request());
 
         assertThat(decision.approved()).isTrue();
-        assertThat(decision.comment()).isEqualTo("user-approved");
+        assertThat(((ApprovalDecision.Approve) decision).comment())
+                .isEqualTo("user-approved");
     }
 
     @Test
@@ -67,7 +68,8 @@ class TerminalApprovalTest {
         ApprovalDecision decision = approvalFor("n\n").request(request());
 
         assertThat(decision.approved()).isFalse();
-        assertThat(decision.comment()).isEqualTo("user-denied");
+        assertThat(((ApprovalDecision.Reject) decision).reason())
+                .isEqualTo("user-denied");
     }
 
     @Test
@@ -86,7 +88,8 @@ class TerminalApprovalTest {
         ApprovalDecision decision = approvalFor("").request(request());
 
         assertThat(decision.approved()).isFalse();
-        assertThat(decision.comment()).contains("EOF");
+        assertThat(((ApprovalDecision.Reject) decision).reason())
+                .contains("EOF");
     }
 
     @Test
@@ -104,12 +107,15 @@ class TerminalApprovalTest {
                 new TerminalApproval(failing, prompt).request(request());
 
         assertThat(decision.approved()).isFalse();
-        assertThat(decision.comment()).contains("IO error");
+        assertThat(((ApprovalDecision.Reject) decision).reason())
+                .contains("IO error");
     }
 
     @Test
     void decisionCarriesTheRequestId() {
-        assertThat(approvalFor("y\n").request(request()).requestId())
+        assertThat(
+                ((ApprovalDecision.Approve) approvalFor("y\n").request(request()))
+                        .requestId())
                 .isEqualTo(REQUEST_ID);
     }
 

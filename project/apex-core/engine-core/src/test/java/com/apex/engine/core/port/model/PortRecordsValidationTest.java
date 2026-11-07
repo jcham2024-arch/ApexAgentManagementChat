@@ -93,8 +93,8 @@ class PortRecordsValidationTest {
 
     @Test
     void approvalDecisionNormalizesNullComment() {
-        assertThat(new ApprovalDecision("r1", true, null).comment()).isEmpty();
-        assertThat(new ApprovalDecision("r1", false, "no").comment())
+        assertThat(new ApprovalDecision.Approve("r1", null).comment()).isEmpty();
+        assertThat(new ApprovalDecision.Reject("r1", "no").reason())
                 .isEqualTo("no");
     }
 }

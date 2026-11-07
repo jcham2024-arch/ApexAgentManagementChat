@@ -46,17 +46,18 @@ public final class TerminalApproval implements ApprovalPort {
         try {
             String line = in.readLine();
             if (line == null) {
-                return new ApprovalDecision(req.id(), false,
+                return new ApprovalDecision.Reject(req.id(),
                         "no input (EOF)");
             }
             String trimmed = line.trim();
             boolean approved = trimmed.startsWith("y")
                     || trimmed.startsWith("Y");
-            return new ApprovalDecision(req.id(), approved,
-                    approved ? "user-approved" : "user-denied");
+            return approved
+                    ? new ApprovalDecision.Approve(req.id(), "user-approved")
+                    : new ApprovalDecision.Reject(req.id(), "user-denied");
         } catch (IOException e) {
-            return new ApprovalDecision(req.id(), false,
-                    "IO error: " + e.getMessage());
+            return new ApprovalDecision.Reject(req.id(),
+                        "IO error: " + e.getMessage());
         }
     }
 }

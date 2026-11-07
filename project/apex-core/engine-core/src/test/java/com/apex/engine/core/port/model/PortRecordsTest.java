@@ -94,7 +94,7 @@ class PortRecordsTest {
     @Test
     void approvalDecisionRejectsNullRequestId() {
         assertThatNullPointerException()
-                .isThrownBy(() -> new ApprovalDecision(null, true, "ok"));
+                .isThrownBy(() -> new ApprovalDecision.Approve(null, "ok"));
     }
 
     @Test
@@ -132,21 +132,23 @@ class PortRecordsTest {
     void auditEntryRejectsNulls() {
         assertThatNullPointerException()
                 .isThrownBy(() -> new AuditEntry(null, "login", Instant.EPOCH,
-                        "", "h"));
+                        "", "h", "", ""));
         assertThatNullPointerException()
                 .isThrownBy(() -> new AuditEntry("a1", null, Instant.EPOCH,
-                        "", "h"));
+                        "", "h", "", ""));
         assertThatNullPointerException()
-                .isThrownBy(() -> new AuditEntry("a1", "login", null, "", "h"));
+                .isThrownBy(() -> new AuditEntry("a1", "login", null, "", "h",
+                        "", ""));
         assertThatNullPointerException()
                 .isThrownBy(() -> new AuditEntry("a1", "login", Instant.EPOCH,
-                        "", null));
+                        "", null, "", ""));
     }
 
     @Test
     void auditEntryRejectsNullPreviousHash() {
         assertThatNullPointerException().isThrownBy(() ->
-                new AuditEntry("id", "action", Instant.now(), null, "hash"));
+                new AuditEntry("id", "action", Instant.now(), null, "hash",
+                        "", ""));
     }
 
     @Test
