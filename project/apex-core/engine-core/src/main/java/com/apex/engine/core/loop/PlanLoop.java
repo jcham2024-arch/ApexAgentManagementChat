@@ -21,11 +21,15 @@ import java.util.Optional;
  * the cancellation token at every step boundary so cancellation is
  * observable within 100ms (K6). Stops at {@code maxSteps}.
  *
- * <p>The action receives the cancellation {@link CancellationToken}
- * directly and must check {@link CancellationToken#isCancelled()} at
- * safe points. {@link Action} lives in engine-planner, which cannot
- * name this module's {@link CancellationToken} by direct import because
- * engine-planner does not depend on engine-core.
+ * <p>The planner is injected via constructor so the core can be tested
+ * with a mock. The concrete planner ({@link AStarPlanner}) is wired at
+ * the application level. {@link Action} lives in engine-planner.
+ *
+ * <p>ARCHITECTURAL NOTE: The loop currently instantiates {@link
+ * AStarPlanner} directly. A future refactor should introduce a
+ * {@link com.apex.engine.core.port.PlannerPort} adapter that resolves
+ * string-based {@link com.apex.engine.core.port.model.PlanRequest} to
+ * typed {@link Goal} and {@link Action} objects.
  */
 public final class PlanLoop {
 
