@@ -1,7 +1,17 @@
 .m2/
 target/
 *.class
+*.jar
+*.log
 .gradle/
 .idea/
 *.iml
 out/
+.vscode/
+.DS_Store
+.env
+.env.*
+dependency-reduced-pom.xml
+pom.xml.tag
+release.properties
+.harness-scratch/

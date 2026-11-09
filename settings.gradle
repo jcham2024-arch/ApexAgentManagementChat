@@ -1,6 +1,5 @@
 rootProject.name = 'apex'
 
-include 'core-engine'
 include 'testkit'
 include 'platform-android'
 include 'platform-desktop'

@@ -1,6 +1,8 @@
 main
 # Apex Agent Management Chat (LLM Architecture & Context Guide)
 
+![CI](https://github.com/jcham2024-arch/ApexAgentManagementChat/actions/workflows/ci.yml/badge.svg)
+
 ## Project Overview
 Apex Agent Management Chat is a multi-module, Java 21 project designed to orchestrate autonomous AI agents. It strictly adheres to Hexagonal Architecture (Ports and Adapters) and a tiered module structure to ensure the core business logic remains completely isolated from external frameworks and infrastructure. This document is optimized to provide immediate, structured context for LLM agents contributing to or navigating this codebase.
 
@@ -38,11 +40,24 @@ The project enforces strict boundaries between modules using the Maven Enforcer 
 - Null Safety: All packages must have a package-info.java annotated with @NullMarked. Do not return null; use Optional or explicit empty collections.
 - Resource Management: Long-running tasks must respect the CancellationToken passed through the PlanLoop. Check for cancellation at every step.
 
-## Current State & Areas for Improvement
-When asked to write new features or refactor, prioritize these areas:
-1. Testing: The architectural rules are enforced by ArchUnit, but unit test coverage for the deterministic planner and the cryptographic audit log is currently sparse. Adding robust tests is a high priority.
-2. Documentation: The root README.md is missing. Keep code comments and Javadoc up to date, especially for Port interfaces.
-3. Avoid Over-Engineering: The tiered structure is powerful but complex. Do not add new modules unless absolutely necessary. 
+## Current State
+
+Documentation: `AGENT_RULES.md` (behavior contract), `CONTEXT.md` (project map
+and file index), `docs/LOCAL-BUILD.md` (Maven workaround flags), and `build/`
+(phase-gated session files).
+
+Test coverage: `AStarPlannerTest` and `AStarPlannerDeterminismTest` cover
+planner determinism; `PlanLoopTest` covers loop success, cancellation, stuck,
+failed, and max-steps behavior; `HashChainTest` covers per-entry HMAC
+sensitivity and short-key rejection; `CorePurityTest` enforces Tier 0 purity
+in every Tier 0 module.
+
+Status: S2 kernel (ports, A* planner, plan loop, tools, SQLite storage, CLI)
+landed on `main`. This session is a housekeeping/cleanup pass with no active
+phase file.
+
+Avoid over-engineering: the tiered structure is powerful but complex; do not
+add new modules unless absolutely necessary.
 
 ## Instructions for LLM Agents Working on this Repo
 1. Before adding a dependency to Tier 0, check if it violates the Maven Enforcer constraints in the root pom.xml.
@@ -95,22 +110,65 @@ project/
   testkit/          Shared test utilities
 ```
 
-## Build
+## Module map
 
-Java 21, Maven 3.9+. The root reactor aggregates the three tier group
-parents plus adapter modules:
+| Boundary | Module | Role |
+|---|---|---|
+| Tier 0 pure core | `project/apex-core/engine-core` | PlanLoop, policy engine, core ports |
+| Tier 0 pure core | `project/apex-core/engine-planner` | AStarPlanner |
+| Tier 0 pure core | `project/apex-core/engine-tools` | ToolExecutorPort / ToolGatewayPort interfaces |
+| Tier 0 pure core | `project/apex-core/engine-store` | StoragePort / CheckpointPort interfaces |
+| Tier 0 pure core | `project/engine-json` | Minimal JSON parser |
+| Tier 0 pure core | `project/engine-memory` | Episodic memory, compactor, router |
+| Tier 0 Layer 1 | `project/apex-chat/apex-chat-core` | Pure abstract POJOs |
+| Tier 0 Layer 1 | `project/apex-chat/apex-chat-domain` | TypedId, TenantId identities |
+| Tier 1 adapter | `project/engine-cli` | Task-file loader, ReAct runner, CLI entrypoint |
+| Tier 1 adapter | `project/engine-llm-http` | OpenAI-compatible ChatModelPort adapter |
+| Tier 1 adapter | `project/engine-sandbox` | Sandboxed tool execution tiers |
+| Tier 1 adapter | `project/engine-store-sqlite` | SQLite StoragePort |
+| Tier 1 adapter | `project/engine-tools-impl` | Five kernel tools (read/write/list/http/run) |
+| Tier 1 adapter | `project/platform-android` | Android SDK node (ART + Room, deferred) |
+| Tier 1 adapter | `project/platform-desktop` | Desktop entry point |
+| Tier 1 shared | `project/testkit` | Shared test utilities |
+| Tier 2 platform | `project/apex-platform/apex-auth` | JWT auth, RBAC policy |
+| Tier 2 platform | `project/apex-platform/apex-tenant` | Tenancy isolation |
+| Tier 2 platform | `project/apex-platform/apex-audit` | HMAC-SHA256 hash chain, audit log |
+| Tier 2 platform | `project/apex-platform/apex-app-real` | Real app entry point |
+| Aggregators | `project/apex-chat`, `project/apex-core`, `project/apex-platform` | Group-parent POMs |
+| Aggregators | `project/apex` | Engine reactor POM |
+| Aggregators | `pom.xml` (root), `project/bom` | Root reactor / BOM |
+
+
+## Build and Test
+
+Maven is the single canonical build system. There is exactly one documented
+build path: the root `pom.xml` reactor. Gradle files under `project/core-engine`
+are an abandoned experiment and were removed; they are not a supported build
+path.
+
+Two entry points:
 
 ```bash
-mvn install                 # build + test all modules, install to ~/.m2
-mvn -f project/apex/pom.xml test   # engine reactor tests only
+# Full tree: root reactor (group parents + adapters).
+mvn -B install                                   # CI: full build + test
+
+# Engine reactor only (all tiers under project/).
+mvn -B -f project/apex/pom.xml verify            # canonical verification command
 ```
 
-Local builds need workaround flags (see `docs/LOCAL-BUILD.md`):
+Local builds need workaround flags (see `docs/LOCAL-BUILD.md`) because
+`user.home` points at a Termux path and the default `java.io.tmpdir` does not
+exist for the app UID:
 
 ```bash
-mvn install -Dmaven.repo.local=$PWD/.m2 \
-  -DargLine="-Djava.io.tmpdir=$HARNESS_SCRATCH/apex-tmp"
+export MAVEN_REPO_LOCAL=$PWD/.m2
+export HARNESS_TMP=$HARNESS_SCRATCH/apex-tmp
+mvn -B install -Dmaven.repo.local=$MAVEN_REPO_LOCAL \
+  -DargLine="-Djava.io.tmpdir=$HARNESS_TMP"
 ```
+
+`mvn test` cannot run locally without both flags; CI remains the authoritative
+verifier (see `AGENT_RULES.md` §5).
 
 ### Enforcement gates
 
@@ -122,6 +180,52 @@ Every commit must pass three gates, enforced mechanically:
 3. **ArchUnit** — every Tier 0 module has a `CorePurityTest` proving no
    `java.io`, `java.nio.file`, `java.net`, reflection, `Runtime`,
    `ProcessBuilder`, `System.*`, or `Executors.*`.
+
+## Coverage visibility
+
+Coverage is reported through CI test execution; no arbitrary thresholds are
+enforced initially — visibility guides expansion. Critical modules with
+explicit coverage tracking:
+
+- Planner determinism: `AStarPlannerTest`, `AStarPlannerDeterminismTest`
+- PlanLoop orchestration: `PlanLoopTest`, `PlanLoopIntegrationTest`
+- Audit-chain verification: `HashChainTest`, `HashChainTamperEvidenceTest`
+- Core purity constraints: `CorePurityTest` in every Tier 0 module
+
+A coverage tool (e.g. JaCoCo) is not bound to the build because its license
+(EPL/LGPL) is outside the project's allowed set (Apache 2.0, MIT, BSD, ISC);
+adopting one requires a license-policy exception.
+
+## Getting Started
+
+Prerequisites:
+
+- Java 21 (JDK)
+- Maven 3.9+
+
+Build and test the full tree:
+
+```bash
+export MAVEN_REPO_LOCAL=$PWD/.m2
+export HARNESS_TMP=$HARNESS_SCRATCH/apex-tmp
+mvn -B install -Dmaven.repo.local=$MAVEN_REPO_LOCAL \
+  -DargLine="-Djava.io.tmpdir=$HARNESS_TMP"
+```
+
+`mvn test` cannot run locally without both flags (see `docs/LOCAL-BUILD.md`);
+CI remains the authoritative verifier (see `AGENT_RULES.md` §5).
+
+## Testing Strategy
+
+Three tiers of automated testing:
+
+- Unit tests — pure Tier 0 logic (planner, ports, domain models) plus
+  `CorePurityTest` in every Tier 0 module enforcing architectural purity.
+- Integration tests — `PlanLoopIntegrationTest` (checkpoint/resume, audit
+  emission, cross-run determinism) and `HashChainTamperEvidenceTest`
+  (tamper detection, reorder, missing records).
+- Architectural tests — `CorePurityTest` (ArchUnit) and the CI jdeps
+  bytecode-purity gate (Gate G2). Violations fail the build.
 
 ## Roadmap
 
