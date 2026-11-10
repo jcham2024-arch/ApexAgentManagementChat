@@ -1,6 +1,0 @@
-rootProject.name = 'apex'
-
-include 'testkit'
-include 'platform-android'
-include 'platform-desktop'
-include 'bom'

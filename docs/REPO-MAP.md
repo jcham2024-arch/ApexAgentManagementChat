@@ -16,7 +16,6 @@ ApexAgentManagementChat/
 ├── CONTEXT.md                       # Project map & file index (always loaded)
 ├── ROADMAP.md                       # Delivery phases and versions
 ├── STANDARDS.md                     # Language coding standards
-├── SALVAGE.md                       # Prior-repo patterns
 ├── LOCAL-BUILD.md                   # Local build recipe (moved from root per NEXT-STEPS.md §2.3)
 ├── .github/workflows/ci.yml         # CI: Maven build + Gate G2 (jdeps)
 ├── docs/

@@ -105,9 +105,6 @@ project/
   engine-sandbox/   Tier 1: sandboxed tool execution tiers
   engine-store-sqlite/Tier 1: SQLite StoragePort
   engine-tools-impl/Tier 1: five kernel tools (read, write, list, http, run)
-  platform-android/ Tier 1: Android SDK node (ART + Room, deferred)
-  platform-desktop/ Tier 1: desktop entry point
-  testkit/          Shared test utilities
 ```
 
 ## Module map
@@ -127,9 +124,6 @@ project/
 | Tier 1 adapter | `project/engine-sandbox` | Sandboxed tool execution tiers |
 | Tier 1 adapter | `project/engine-store-sqlite` | SQLite StoragePort |
 | Tier 1 adapter | `project/engine-tools-impl` | Five kernel tools (read/write/list/http/run) |
-| Tier 1 adapter | `project/platform-android` | Android SDK node (ART + Room, deferred) |
-| Tier 1 adapter | `project/platform-desktop` | Desktop entry point |
-| Tier 1 shared | `project/testkit` | Shared test utilities |
 | Tier 2 platform | `project/apex-platform/apex-auth` | JWT auth, RBAC policy |
 | Tier 2 platform | `project/apex-platform/apex-tenant` | Tenancy scaffolding (package-only shell; isolation TBD) |
 | Tier 2 platform | `project/apex-platform/apex-audit` | HMAC-SHA256 hash chain, audit log |
