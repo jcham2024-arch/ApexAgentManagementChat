@@ -4,9 +4,9 @@ Single register of every unresolved question surfaced by Phases A–C. Each ques
 
 | # | Question | Surfaced in | Owner | Blocking status | Blocks |
 |---|----------|-------------|-------|-----------------|--------|
-| Q1 | Audit RPO/RTO for the durable audit store | A1 spike / NFR §1 | Engineering team / stakeholder | Non-blocking (durable impl proceeds with SQLite defaults) | Audit persistence spec |
-| Q2 | Audit per-append latency and throughput budget | A1 spike / NFR §1 | Stakeholder | Non-blocking | Audit persistence spec |
-| Q3 | HMAC-SHA256 key storage and rotation for audit chain | A1 spike / NFR §1 | Security / stakeholder | Non-blocking (key passed in; rotation future) | Audit persistence spec |
+| Q1 | Audit RPO/RTO for the durable audit store | A1 spike / NFR §1 | Engineering team / stakeholder | CLOSED — docs/contracts/decisions/Q1-audit-rpo-rto.md | Audit persistence spec |
+| Q2 | Audit per-append latency and throughput budget | A1 spike / NFR §1 | Stakeholder | CLOSED — docs/contracts/decisions/Q2-audit-latency-throughput.md | Audit persistence spec |
+| Q3 | HMAC-SHA256 key storage and rotation for audit chain | A1 spike / NFR §1 | Security / stakeholder | CLOSED — docs/contracts/decisions/Q3-hmac-key-storage-rotation.md | Audit persistence spec |
 | Q4 | JWKS endpoint URL and refresh interval | A2 spike / ADR-002 / NFR §2 | Stakeholder | Blocking | Asymmetric JWT spec |
 | Q5 | Clock-skew tolerance window (`exp`/`nbf`) | A2 spike / NFR §2 | Stakeholder | Blocking | Asymmetric JWT spec |
 | Q6 | HS256 deprecation sunset date | A2 spike | Stakeholder | Non-blocking | Asymmetric JWT spec (future) |
@@ -28,7 +28,13 @@ Q4, Q5, Q7, Q9, Q11, Q13, Q15, Q16.
 
 ## Non-blocking questions (spec may proceed with documented assumptions)
 
-Q1, Q2, Q3, Q6, Q8, Q10, Q12, Q14, Q17.
+Q6, Q8, Q10, Q12, Q14, Q17.
+
+## Closed questions (resolved, decision notes recorded)
+
+Q1 — docs/contracts/decisions/Q1-audit-rpo-rto.md (RPO = 0, RTO = 4 h)
+Q2 — docs/contracts/decisions/Q2-audit-latency-throughput.md (p99 ≤ 10 ms, ≥ 100 appends/sec)
+Q3 — docs/contracts/decisions/Q3-hmac-key-storage-rotation.md (key outside volume, genesis 64 zeros, rotation never resets chain, key_id per record, 90-day baseline)
 
 ## Process
 

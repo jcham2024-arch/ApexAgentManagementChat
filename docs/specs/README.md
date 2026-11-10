@@ -18,7 +18,7 @@ A module build spec may be authored **only** when all of the following are true:
 
 | Module (capability) | D8.1 spike | D8.2 ADR | D8.3 port class. | D8.4 matrix row | D8.5 blocking Qs resolved | D8.6 tier/dep ceiling | D8.7 test strategy | Overall |
 |---------------------|:----------:|:--------:|:----------------:|:---------------:|:-------------------------:|:-----------------------:|:------------------:|:-------:|
-| Durable audit persistence (`AuditPort` durable impl) | ✓ A1 | ✓ ADR-001 | ✓ additive | ✓ | ✓ (Q1–Q3 non-blocking) | ✓ Tier 1 adapter; `java.base` + `jspecify` + SQLite | ✓ unit + integration + `CorePurityTest` for Tier 0 | **READY** |
+| Durable audit persistence (`AuditPort` durable impl) | ✓ A1 | ✓ ADR-001 | ✓ additive | ✓ | ✓ (Q1–Q3 closed: RPO=0/RTO=4h, p99≤10ms/≥100ops, key outside volume+key_id) | ✓ Tier 1 adapter; `java.base` + `jspecify` + SQLite | ✓ unit + integration + `CorePurityTest` for Tier 0 | **READY** |
 | Asymmetric JWT (RS256 + JWKS) | ✓ A2 | ✓ ADR-002 | ✓ unchanged | ✓ | ✗ (Q4, Q5 blocking) | ✓ Tier 2; jjwt | ✓ unit + integration | blocked |
 | Spring Boot starter | ✓ A3 | ✓ ADR-003 | ✓ unchanged | ✓ | ✗ (Q7 blocking) | ✓ Tier 2; Spring Boot | ✓ unit + integration | blocked |
 | Spring AI model adapter | ✓ A4 | ✓ ADR-004 | ✓ unchanged | ✓ | ✗ (Q9 blocking) | ✓ Tier 2; Spring AI | ✓ unit + integration | blocked |
@@ -30,7 +30,7 @@ A module build spec may be authored **only** when all of the following are true:
 
 **One module passes the spec readiness checklist: durable audit persistence (`AuditPort` durable implementation).**
 
-All other specified capabilities are **blocked** on stakeholder input for the open questions listed in docs/contracts/open-questions.md (blocking: Q4, Q5, Q7, Q9, Q11, Q13, Q15, Q16).
+All other specified capabilities are **blocked** on stakeholder input for the open questions listed in docs/contracts/open-questions.md (blocking: Q4, Q5, Q7, Q9, Q11, Q13, Q15, Q16). Q1–Q3 are now **closed** with decision notes recorded in `docs/contracts/decisions/`.
 
 ## Sequencing constraint (ADR-008 / NEXT-PHASE-INSTRUCTIONS §6)
 
