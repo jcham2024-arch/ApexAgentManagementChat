@@ -116,10 +116,10 @@ project/
 |---|---|---|
 | Tier 0 pure core | `project/apex-core/engine-core` | PlanLoop, policy engine, core ports |
 | Tier 0 pure core | `project/apex-core/engine-planner` | AStarPlanner |
-| Tier 0 pure core | `project/apex-core/engine-tools` | ToolExecutorPort / ToolGatewayPort interfaces |
+| Tier 0 pure core | `project/apex-core/engine-tools` | Tool scaffolding (package-only shell; port interfaces live in engine-core/port) |
 | Tier 0 pure core | `project/apex-core/engine-store` | StoragePort / CheckpointPort interfaces |
-| Tier 0 pure core | `project/engine-json` | Minimal JSON parser |
-| Tier 0 pure core | `project/engine-memory` | Episodic memory, compactor, router |
+| Tier 0 pure core | `project/engine-json` | JSON scaffolding (package-only shell; parser TBD) |
+| Tier 0 pure core | `project/engine-memory` | Memory scaffolding (package-only shell; router/compactor TBD) |
 | Tier 0 Layer 1 | `project/apex-chat/apex-chat-core` | Pure abstract POJOs |
 | Tier 0 Layer 1 | `project/apex-chat/apex-chat-domain` | TypedId, TenantId identities |
 | Tier 1 adapter | `project/engine-cli` | Task-file loader, ReAct runner, CLI entrypoint |
@@ -131,7 +131,7 @@ project/
 | Tier 1 adapter | `project/platform-desktop` | Desktop entry point |
 | Tier 1 shared | `project/testkit` | Shared test utilities |
 | Tier 2 platform | `project/apex-platform/apex-auth` | JWT auth, RBAC policy |
-| Tier 2 platform | `project/apex-platform/apex-tenant` | Tenancy isolation |
+| Tier 2 platform | `project/apex-platform/apex-tenant` | Tenancy scaffolding (package-only shell; isolation TBD) |
 | Tier 2 platform | `project/apex-platform/apex-audit` | HMAC-SHA256 hash chain, audit log |
 | Tier 2 platform | `project/apex-platform/apex-app-real` | Real app entry point |
 | Aggregators | `project/apex-chat`, `project/apex-core`, `project/apex-platform` | Group-parent POMs |
@@ -155,6 +155,10 @@ mvn -B install                                   # CI: full build + test
 # Engine reactor only (all tiers under project/).
 mvn -B -f project/apex/pom.xml verify            # canonical verification command
 ```
+
+The engine reactor excludes four modules that live only in the root
+reactor: `engine-otel`, `engine-metrics`, `engine-approval`,
+`engine-eval`. Use the root `mvn install` to build and test those too.
 
 Local builds need workaround flags (see `docs/LOCAL-BUILD.md`) because
 `user.home` points at a Termux path and the default `java.io.tmpdir` does not
