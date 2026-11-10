@@ -52,9 +52,24 @@ failed, and max-steps behavior; `HashChainTest` covers per-entry HMAC
 sensitivity and short-key rejection; `CorePurityTest` enforces Tier 0 purity
 in every Tier 0 module.
 
-Status: S2 kernel (ports, A* planner, plan loop, tools, SQLite storage, CLI)
-landed on `main`. This session is a housekeeping/cleanup pass with no active
-phase file.
+Pre-spec phase: complete. Q1–Q16 closed with decision notes in
+`docs/contracts/decisions/`.
+
+Implemented beyond the S2 kernel: durable SQLite `AuditPort` adapter
+(`apex-audit-persistence-sqlite`), wired as a Tier 1 adapter behind the
+existing `AuditPort` contract.
+
+Remaining S3 security work: asymmetric JWT (RS256 + JWKS), tenancy
+(package-only shell — `tenantId` not yet added to `AuditEntry`), and tool
+sandboxing (package-only shell — no tool implementations).
+
+Remaining S3/S4 integration work: Spring Boot starter, Spring AI adapter,
+MCP adapter (specs not yet authored; waiting on dependency order per
+`docs/specs/README.md`).
+
+Status: Pre-spec complete; S2 kernel + durable audit persistence landed
+on `main`. First spec-gated module (durable audit persistence) implemented
+and verified. Asymmetric JWT spec is the next spec-gated module to author.
 
 Avoid over-engineering: the tiered structure is powerful but complex; do not
 add new modules unless absolutely necessary.

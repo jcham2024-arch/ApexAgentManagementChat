@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -221,6 +222,70 @@ class SqliteAuditLogTest {
                             .isInstanceOf(java.sql.SQLException.class);
                 }
             }
+        }
+    }
+
+    @Test
+    void partialWriteSimulationNoPartialRowVisible(@TempDir Path dir) throws Exception {
+        // Simulate a failed transaction: inject an SQLException by trying
+        // to insert a duplicate id, which violates the UNIQUE constraint
+        // and rolls back. Verify no partial row is visible afterward.
+        try (SqliteAuditLog log = open(dir)) {
+            AuditEntry first = log.append("original", Instant.parse("2026-01-01T00:00:00Z"));
+            int beforeCount = log.all().size();
+
+            try (java.sql.Connection c =
+                         java.sql.DriverManager.getConnection(
+                                 "jdbc:sqlite:" + dir.resolve("audit.db").toAbsolutePath())) {
+                try (java.sql.Statement s = c.createStatement()) {
+                    assertThatThrownBy(() -> s.execute(
+                            "INSERT INTO audit_log (id, action, at, previous_hash, " +
+                                    "hash, trace_id, span_id) VALUES ('" +
+                                    first.id() + "', 'duplicate', 1000, '', 'badhash', '', '')"))
+                            .isInstanceOf(java.sql.SQLException.class);
+                }
+            }
+
+            // The failed insert must not leave a partial row visible.
+            assertThat(log.all()).hasSize(beforeCount);
+            assertThat(log.verifyChain()).isTrue();
+        }
+    }
+
+    @Test
+    void restoreDrillTamperPersistsAcrossRestart(@TempDir Path dir) throws Exception {
+        // Restore drill: tamper with the database, verify detection,
+        // then confirm the tamper persists across restart (restoration
+        // requires external backup replacement).
+        try (SqliteAuditLog log = open(dir)) {
+            log.append("before-tamper", Instant.parse("2026-01-01T00:00:00Z"));
+            log.append("after-tamper", Instant.parse("2026-01-01T00:00:01Z"));
+            assertThat(log.verifyChain()).isTrue();
+        }
+
+        // Tamper: insert a rogue row directly in the database (outside the
+        // adapter) with a broken hash chain.
+        try (java.sql.Connection c =
+                     java.sql.DriverManager.getConnection(
+                             "jdbc:sqlite:" + dir.resolve("audit.db").toAbsolutePath())) {
+            try (java.sql.Statement s = c.createStatement()) {
+                s.execute("INSERT INTO audit_log (id, action, at, previous_hash, " +
+                        "hash, trace_id, span_id) VALUES ('rogue-tamper', " +
+                        "'tampered', 99999, 'broken-link', 'broken-hash', '', '')");
+            }
+        }
+
+        // Verify detection: chain is broken after tamper.
+        try (SqliteAuditLog log = open(dir)) {
+            assertThat(log.verifyChain()).isFalse();
+        }
+
+        // Tamper persists across restart: reopen and chain is still broken.
+        // Restoration requires replacing the database file with a backup
+        // copy (documented in docs/operations/audit-persistence-baselines.md).
+        try (SqliteAuditLog log = open(dir)) {
+            assertThat(log.verifyChain()).isFalse();
+            assertThat(log.all()).hasSize(3);
         }
     }
 }
