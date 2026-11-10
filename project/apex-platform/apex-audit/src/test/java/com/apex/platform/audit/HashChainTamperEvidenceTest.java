@@ -2,6 +2,7 @@ package com.apex.platform.audit;
 
 import com.apex.engine.core.port.model.AuditEntry;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * short-key rejection; this class verifies that the assembled chain
  * detects modification, reordering, and missing records.
  */
+@Tag("integration")
 class HashChainTamperEvidenceTest {
 
     private static final byte[] KEY = key32();
@@ -81,6 +83,20 @@ class HashChainTamperEvidenceTest {
         setEntries(log, missing);
 
         assertThat(log.verifyChain()).isFalse();
+    }
+
+    @Test
+    void truncatedChainVerifiesAsValidPrefix() throws Exception {
+        // verifyChain walks each entry against its predecessor, so a
+        // truncated chain is still a well-formed prefix and verifies.
+        // Detecting truncation would require committing to a separate
+        // head hash; InMemoryAuditLog does not track one.
+        InMemoryAuditLog log = logWith(4);
+        List<AuditEntry> entries = entriesOf(log);
+        List<AuditEntry> truncated = new ArrayList<>(entries.subList(0, 2));
+        setEntries(log, truncated);
+
+        assertThat(log.verifyChain()).isTrue();
     }
 
     @Test

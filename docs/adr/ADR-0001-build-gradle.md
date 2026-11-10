@@ -1,8 +1,10 @@
 # ADR-0001: Build system — Gradle for unified build
 
-**Status:** Proposed  
+**Status:** Superseded  
 **Deciders:** Engineering team  
-**Date:** 2026-11-05
+**Date:** 2026-11-05  
+
+> **Superseded by cleanup phase (S-cleanup):** Maven (`pom.xml`) is the single canonical build system; the Gradle artifacts (`project/core-engine/build.gradle`, the `:core-engine` Gradle module, and the Gradle skeleton modules) were removed. See `README.md` "Build and Test" for the canonical commands. This ADR is retained for historical context only.
 
 ## Context
 
