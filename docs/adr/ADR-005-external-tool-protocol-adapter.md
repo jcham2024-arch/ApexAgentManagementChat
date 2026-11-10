@@ -45,3 +45,6 @@ The Model Context Protocol (MCP) is a tool-server protocol that lets an LLM clie
 
 - docs/spikes/A5-mcp-adapter.md — the spike finding behind this decision
 - `ToolExecutorPort`, `ToolCall`, `ToolResult` in `engine-core/port` / `port/model` (Tier 0)
+- docs/contracts/decisions/Q11-model-provider-seam.md — Q11 decision note |
+| (Spring AI adapter seam; MCP SDK license remains a separate deployment |
+| concern noted in ADR-005 Negative section)

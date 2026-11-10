@@ -36,12 +36,12 @@ Blocking questions Q4–Q16 are now **closed** with decision notes recorded in `
 
 | Spec | Path | Status |
 |------|------|--------|
-| Durable audit persistence | `docs/specs/audit-persistence-spec.md` | Authored (implementation merged) |
-| Asymmetric JWT / RS256 + JWKS | `docs/specs/asymmetric-jwt-spec.md` | Authored (ready for approval) |
-| Spring Boot starter | `docs/specs/spring-boot-starter-spec.md` | Authored (ready for approval) |
-| Spring AI model adapter | `docs/specs/spring-ai-adapter-spec.md` | Authored (ready for approval) |
-| Tenancy isolation | `docs/specs/tenancy-spec.md` | Authored (ready for approval) |
-| Tool sandboxing + v1 tools | `docs/specs/tool-sandboxing-spec.md` | Authored (ready for approval) |
+| Durable audit persistence | `docs/specs/audit-persistence-spec-part-1.md` | Authored (implementation merged) |
+| Asymmetric JWT / RS256 + JWKS | `docs/specs/asymmetric-jwt-spec-part-1.md` | Authored (ready for approval) |
+| Spring Boot starter | `docs/specs/spring-boot-starter-spec-part-1.md` | Authored (ready for approval) |
+| Spring AI model adapter | `docs/specs/spring-ai-adapter-spec-part-1.md` | Authored (ready for approval) |
+| Tenancy isolation | `docs/specs/tenancy-spec-part-1.md` | Authored (ready for approval) |
+| Tool sandboxing + v1 tools | `docs/specs/tool-sandboxing-spec-part-1.md` | Authored (ready for approval) |
 
 MCP adapter spec is deferred until sandboxing spec is approved (dependency per closure sequence).
 
