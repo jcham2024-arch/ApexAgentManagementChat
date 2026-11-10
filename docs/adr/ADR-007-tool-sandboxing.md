@@ -48,3 +48,4 @@
 - docs/spikes/A7-tooling.md — the spike finding behind this decision
 - `ToolExecutorPort`, `ToolCall`, `ToolResult`, `ToolId` in `engine-core/port` / `port/model` (Tier 0)
 - `engine-tools-impl` (Tier 1) — target for v1 tool implementations
+- docs/contracts/decisions/Q15-Q16-tool-sandboxing.md — Q15/Q16 decision note (deny-by-default manifest, deny-wins)

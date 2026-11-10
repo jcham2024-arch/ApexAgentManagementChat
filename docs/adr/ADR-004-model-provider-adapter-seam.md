@@ -44,3 +44,4 @@ Spring AI (`ChatClient`, `ToolCallback`) must be integrated as a model-provider 
 
 - docs/spikes/A4-spring-ai-adapter.md — the spike finding behind this decision
 - `ChatModelPort`, `ToolExecutorPort` in `engine-core/port` (Tier 0)
+- docs/contracts/decisions/Q11-model-provider-seam.md — Q11 decision note (adapter seam, ToolCallingAdvisor owns loop)

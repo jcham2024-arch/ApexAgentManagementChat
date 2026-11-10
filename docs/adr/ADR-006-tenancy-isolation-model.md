@@ -46,3 +46,4 @@
 - `StoragePort` in `engine-core/port` (Tier 0, already tenant-scoped)
 - `TenantId` in `apex-chat-domain` (Tier 0)
 - `AuditEntry` in `engine-core/port/model` (Tier 0 — may gain `tenantId`)
+- docs/contracts/decisions/Q13-tenancy-isolation.md — Q13 decision note (shared schema + tenant_id, fail-closed)

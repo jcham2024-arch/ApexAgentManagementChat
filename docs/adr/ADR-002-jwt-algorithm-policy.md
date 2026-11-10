@@ -45,3 +45,4 @@
 
 - docs/spikes/A2-asymmetric-jwt.md — the spike finding behind this decision
 - `project/apex-platform/apex-auth/` — current HS256 `TokenVerifier` implementation (Tier 2)
+- docs/contracts/decisions/Q4-Q5-jwt-rs256-jwks.md — Q4/Q5 decision note (RS256 + JWKS + kid)

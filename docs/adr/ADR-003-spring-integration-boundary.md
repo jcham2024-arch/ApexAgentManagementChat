@@ -42,3 +42,4 @@ Existing Spring applications need to embed the Apex kernel. Tier 0 must remain f
 - docs/spikes/A3-spring-boot-starter.md — the spike finding behind this decision
 - AGENT_RULES §2.5: ThreadLocal at HTTP filter boundary only
 - `project/apex-platform/apex-auth/` — JWT filter pattern to reuse (Tier 2)
+- docs/contracts/decisions/Q7-Q9-spring-starter.md — Q7/Q9 decision note (apex-spring-boot-starter, @ConditionalOnMissingBean)
