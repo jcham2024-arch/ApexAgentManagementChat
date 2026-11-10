@@ -115,7 +115,7 @@ order; decide and note it in the commit body.
 | `docs/INVARIANTS.md` | Named testable invariants |
 | `docs/adr/` | Architecture decisions |
 | `docs/LOCAL-BUILD.md` | Local Maven flags and gotchas |
-| `STANDARDS.md`, `SALVAGE.md`, `ROADMAP.md` | Layer 3 references, load when a phase names them |
+| `STANDARDS.md`, `ROADMAP.md` | Layer 3 references, load when a phase names them |
 
 If a file is not indexed in `CONTEXT.md` §2, it does not govern the
 build — do not treat it as a source of truth.
