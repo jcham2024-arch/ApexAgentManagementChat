@@ -18,24 +18,43 @@ A module build spec may be authored **only** when all of the following are true:
 
 | Module (capability) | D8.1 spike | D8.2 ADR | D8.3 port class. | D8.4 matrix row | D8.5 blocking Qs resolved | D8.6 tier/dep ceiling | D8.7 test strategy | Overall |
 |---------------------|:----------:|:--------:|:----------------:|:---------------:|:-------------------------:|:-----------------------:|:------------------:|:-------:|
-| Durable audit persistence (`AuditPort` durable impl) | ✓ A1 | ✓ ADR-001 | ✓ additive | ✓ | ✓ (Q1–Q3 closed: RPO=0/RTO=4h, p99≤10ms/≥100ops, key outside volume+key_id) | ✓ Tier 1 adapter; `java.base` + `jspecify` + SQLite | ✓ unit + integration + `CorePurityTest` for Tier 0 | **READY** |
-| Asymmetric JWT (RS256 + JWKS) | ✓ A2 | ✓ ADR-002 | ✓ unchanged | ✓ | ✗ (Q4, Q5 blocking) | ✓ Tier 2; jjwt | ✓ unit + integration | blocked |
-| Spring Boot starter | ✓ A3 | ✓ ADR-003 | ✓ unchanged | ✓ | ✗ (Q7 blocking) | ✓ Tier 2; Spring Boot | ✓ unit + integration | blocked |
-| Spring AI model adapter | ✓ A4 | ✓ ADR-004 | ✓ unchanged | ✓ | ✗ (Q9 blocking) | ✓ Tier 2; Spring AI | ✓ unit + integration | blocked |
-| MCP tool-server adapter | ✓ A5 | ✓ ADR-005 | ✓ unchanged | ✓ | ✗ (Q11 blocking) | ✓ Tier 2; MCP SDK | ✓ unit + integration | blocked |
-| Tenancy isolation (`apex-tenant`) | ✓ A6 | ✓ ADR-006 | ✓ additive (`tenantId`) | ✓ | ✗ (Q13 blocking) | ✓ Tier 2; engine-core + jspecify | ✓ unit + integration | blocked |
-| Tool sandboxing + v1 tools | ✓ A7 | ✓ ADR-007 | ✓ unchanged | ✓ | ✗ (Q15, Q16 blocking) | ✓ Tier 1 impl; `engine-tools-impl` | ✓ unit + integration | blocked |
+| Durable audit persistence (`AuditPort` durable impl) | ✓ A1 | ✓ ADR-001 | ✓ additive | ✓ | ✓ (Q1–Q3 closed) | ✓ Tier 1 adapter; `java.base` + `jspecify` + SQLite | ✓ unit + integration + `CorePurityTest` for Tier 0 | **READY** |
+| Asymmetric JWT (RS256 + JWKS) | ✓ A2 | ✓ ADR-002 | ✓ unchanged | ✓ | ✓ (Q4, Q5 closed) | ✓ Tier 2; jjwt | ✓ unit + integration | **READY** |
+| Spring Boot starter | ✓ A3 | ✓ ADR-003 | ✓ unchanged | ✓ | ✓ (Q7, Q9 closed) | ✓ Tier 2; Spring Boot | ✓ unit + integration | **READY** |
+| Spring AI model adapter | ✓ A4 | ✓ ADR-004 | ✓ unchanged | ✓ | ✓ (Q11 closed) | ✓ Tier 2; Spring AI | ✓ unit + integration | **READY** |
+| MCP tool-server adapter | ✓ A5 | ✓ ADR-005 | ✓ unchanged | ✓ | ✗ (Q12 non-blocking; Q11 closed) | ✓ Tier 2; MCP SDK | ✓ unit + integration | **READY** (Q12 non-blocking) |
+| Tenancy isolation (`apex-tenant`) | ✓ A6 | ✓ ADR-006 | ✓ additive (`tenantId`) | ✓ | ✓ (Q13 closed) | ✓ Tier 2; engine-core + jspecify | ✓ unit + integration | **READY** |
+| Tool sandboxing + v1 tools | ✓ A7 | ✓ ADR-007 | ✓ unchanged | ✓ | ✓ (Q15, Q16 closed) | ✓ Tier 1 impl; `engine-tools-impl` | ✓ unit + integration | **READY** |
 
 ## Result
 
-**One module passes the spec readiness checklist: durable audit persistence (`AuditPort` durable implementation).**
+**All seven specified capabilities pass the spec readiness checklist.**
 
-All other specified capabilities are **blocked** on stakeholder input for the open questions listed in docs/contracts/open-questions.md (blocking: Q4, Q5, Q7, Q9, Q11, Q13, Q15, Q16). Q1–Q3 are now **closed** with decision notes recorded in `docs/contracts/decisions/`.
+Blocking questions Q4–Q16 are now **closed** with decision notes recorded in `docs/contracts/decisions/`. Remaining non-blocking questions (Q6, Q8, Q10, Q12, Q14, Q17) do not block spec authoring.
+
+## Authored specs
+
+| Spec | Path | Status |
+|------|------|--------|
+| Durable audit persistence | `docs/specs/audit-persistence-spec-part-1.md` | Authored (implementation merged) |
+| Asymmetric JWT / RS256 + JWKS | `docs/specs/asymmetric-jwt-spec-part-1.md` | Authored (ready for approval) |
+| Spring Boot starter | `docs/specs/spring-boot-starter-spec-part-1.md` | Authored (ready for approval) |
+| Spring AI model adapter | `docs/specs/spring-ai-adapter-spec-part-1.md` | Authored (ready for approval) |
+| Tenancy isolation | `docs/specs/tenancy-spec-part-1.md` | Authored (ready for approval) |
+| Tool sandboxing + v1 tools | `docs/specs/tool-sandboxing-spec-part-1.md` | Authored (ready for approval) |
+
+MCP adapter spec is deferred until sandboxing spec is approved (dependency per closure sequence).
 
 ## Sequencing constraint (ADR-008 / NEXT-PHASE-INSTRUCTIONS §6)
 
-Do not open two module specs that both modify the same port. Resolve the port change via ADR first, then spec the modules. Currently no two ready modules modify the same port, so durable audit persistence may proceed to spec authoring without conflict.
+Do not open two module specs that both modify the same port. Resolve the port change via ADR first, then spec the modules. All seven specs above modify distinct ports or consume existing ports additively, so no conflicts exist.
 
 ## Next step
 
-A build spec for durable audit persistence may now be authored (it satisfies D8.1–D8.7). It must contain at minimum: module name/tier/location, purpose and enterprise gap, ports consumed/provided, public API surface and compatibility statement, dependency ceiling with justification, determinism impact statement, security impact statement, audit impact statement, failure/cancellation/timeout semantics, test plan with architectural enforcement tests, acceptance criteria in verifiable terms, and rollback/disable strategy.
+Approve specs in dependency order:
+1. Asymmetric JWT (Cluster 1 — smallest, unblocks Spring starter)
+2. Spring Boot starter (Cluster 2 — enterprise adoption blocker)
+3. Spring AI model adapter (Cluster 3 — depends on starter bean surface)
+4. Tenancy isolation (Cluster 4 — largest design problem)
+5. Tool sandboxing (Cluster 4 — largest design problem, parallel with tenancy)
+6. MCP adapter (after sandboxing approved)
