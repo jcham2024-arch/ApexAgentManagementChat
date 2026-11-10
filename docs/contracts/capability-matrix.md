@@ -9,7 +9,7 @@ Status values: `absent` (no work), `spike-only` (finding written, not specified)
 | Deterministic A* planning | Tier 0 | `PlannerPort` | existing module (`engine-planner`) | implemented |
 | Plan execution loop (OODA replan) | Tier 0 | (kernel; consumes `PlannerPort`, `RuntimePolicy`, `GatePlacementPolicy`, `ToolGatewayPort`) | existing module (`engine-core`) | implemented |
 | Hash-chain audit (in-memory) | Tier 2 | `AuditPort` | existing module (`apex-audit`) | implemented |
-| **Durable audit persistence** | Tier 1 adapter | `AuditPort` | new or existing adapter (`engine-store-sqlite` / new audit-persistence adapter) | specified (ADR-001) |
+| **Durable audit persistence** | Tier 1 adapter | `AuditPort` | new module (`apex-audit-persistence-sqlite`) | implemented |
 | JWT auth (HS256) | Tier 2 | (apex-auth internal; `TokenVerifier`) | existing module (`apex-auth`) | implemented |
 | **Asymmetric JWT (RS256 + JWKS)** | Tier 2 | `TokenVerifier` (apex-auth) | existing module (`apex-auth`, modified) | specified (ADR-002) |
 | **Spring Boot starter** | Tier 2 | all ports as beans | new module (`starter-spring-boot` / TBD) | specified (ADR-003) |
