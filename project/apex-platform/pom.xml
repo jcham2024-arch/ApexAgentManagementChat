@@ -20,6 +20,7 @@
         <module>apex-auth</module>
         <module>apex-tenant</module>
         <module>apex-audit</module>
+        <module>apex-audit-persistence-sqlite</module>
         <module>apex-app-real</module>
     </modules>
 </project>

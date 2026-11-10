@@ -127,6 +127,7 @@ project/
 | Tier 2 platform | `project/apex-platform/apex-auth` | JWT auth, RBAC policy |
 | Tier 2 platform | `project/apex-platform/apex-tenant` | Tenancy scaffolding (package-only shell; isolation TBD) |
 | Tier 2 platform | `project/apex-platform/apex-audit` | HMAC-SHA256 hash chain, audit log |
+| Tier 2 platform | `project/apex-platform/apex-audit-persistence-sqlite` | Durable SQLite-backed AuditPort |
 | Tier 2 platform | `project/apex-platform/apex-app-real` | Real app entry point |
 | Aggregators | `project/apex-chat`, `project/apex-core`, `project/apex-platform` | Group-parent POMs |
 | Aggregators | `project/apex` | Engine reactor POM |
