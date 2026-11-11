@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.apex</groupId>
+        <artifactId>apex-platform</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>apex-auth-jwt-asymmetric</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Apex Auth JWT Asymmetric</name>
+    <description>Tier 1. RS256 JWT verification via JWKS key source.
+        Implements TokenVerifier with make-before-break key rotation,
+        lazy refresh with rate limiting, and algorithm allowlist.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.apex</groupId>
+            <artifactId>engine-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+        </dependency>
+        <!-- Nimbus JOSE + JWT: RS256 signature verification and JWKS
+             parsing. Apache 2.0 license, within the project's allowed
+             license set (Apache 2.0 / MIT / BSD / ISC). -->
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>9.37.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
